@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulário de Vendas - NAJOY</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --burgundy: #6b1115;
+      --burgundy-soft: #8c2a30;
+      --gold: #cda046;
+      --gold-light: #e7c57a;
+      --cream: #f6f0dc;
+      --text-main: #3b2320;
+      --border-soft: #dcc7a0;
+      --shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.08);
+      --radius-lg: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Georgia", "Times New Roman", serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(203, 149, 72, 0.25), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(107, 17, 21, 0.25), transparent 60%),
+        var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      color: var(--text-main);
+    }
+
+    .form-wrapper {
+      width: 100%;
+      max-width: 980px;
+      background-color: #fdf9ee;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 32px 28px 28px;
+      position: relative;
+      overflow: visible;
+      border: 1px solid rgba(205, 160, 70, 0.35);
+    }
+
+    .form-wrapper::before {
+      content: "JJ";
+      position: absolute;
+      font-size: 200px;
+      font-weight: 400;
+      color: rgba(205, 160, 70, 0.08);
+      right: -10px;
+      top: -60px;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand-name {
+      font-size: 32px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--burgundy);
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .header-info {
+      text-align: right;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #7a5e4c;
+    }
+
+    .header-info a {
+      color: var(--burgundy-soft);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(107, 17, 21, 0.35);
+      padding-bottom: 1px;
+    }
+
+    .header-info a:hover {
+      opacity: 0.8;
+    }
+
+    h1 {
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--burgundy);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--burgundy-soft);
+      margin-bottom: 6px;
+    }
+
+    .card {
+      background: rgba(255, 252, 244, 0.95);
+      border-radius: 16px;
+      padding: 18px 16px 14px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+
+    .field--full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #7b5a4d;
+    }
+
+    label .required {
+      color: var(--burgundy-soft);
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="time"],
+    input[type="number"],
+    select,
+    textarea {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 9px 12px;
+      font-size: 13px;
+      background: #fdf8ed;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    textarea {
+      border-radius: 16px;
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #b79c86;
+      font-size: 12px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--gold);
+      background: #fffaf0;
+      box-shadow: 0 0 0 1px rgba(205, 160, 70, 0.32);
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: 28px;
+      background-image: linear-gradient(45deg, transparent 50%, var(--gold) 50%),
+                        linear-gradient(135deg, var(--gold) 50%, transparent 50%);
+      background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .field-helper {
+      font-size: 11px;
+      color: #a1806a;
+    }
+
+    .autocomplete-list {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #fffaf0;
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      z-index: 50;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 10px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(220, 199, 160, 0.35);
+      font-size: 13px;
+      color: var(--text-main);
+      background: #fffaf0;
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-item:hover {
+      background: #f8f0db;
+    }
+
+    .autocomplete-item small {
+      display: block;
+      color: #9d7c69;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .products-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .products-header p {
+      font-size: 11px;
+      color: #8e6d5e;
+    }
+
+    .product-item {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px 12px;
+      align-items: end;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      background: rgba(246, 238, 220, 0.8);
+      border: 1px dashed rgba(205, 160, 70, 0.6);
+      position: relative;
+    }
+
+    .product-item:first-of-type {
+      margin-top: 4px;
+    }
+
+    .pill-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #7c5d51;
+      margin-bottom: 4px;
+    }
+
+    .btn-icon {
+      border-radius: 999px;
+      padding: 8px 14px;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      background: var(--burgundy);
+      color: #fdf5e7;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px rgba(107, 17, 21, 0.2);
+      white-space: nowrap;
+      transition: .2s ease;
+    }
+
+    .btn-icon span.symbol {
+      font-size: 17px;
+      line-height: 1;
+      margin-top: -1px;
+    }
+
+    .btn-icon--ghost {
+      background: transparent;
+      color: #8b6254;
+      border: 1px solid rgba(139, 98, 84, 0.3);
+      box-shadow: none;
+      padding: 7px 10px;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+    }
+
+    .btn-icon--ghost:hover {
+      background: rgba(139, 98, 84, 0.06);
+    }
+
+    .btn-icon:hover {
+      filter: brightness(1.02);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(107, 17, 21, 0.26);
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+      grid-column: 1 / -1;
+    }
+
+    .products-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pill-note {
+      font-size: 11px;
+      background: rgba(255, 253, 246, 0.6);
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid rgba(220, 199, 160, 0.7);
+      color: #8b6c5e;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn-main,
+    .btn-secondary {
+      border-radius: 999px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      transition: .2s ease;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, var(--burgundy) 0%, #3f0507 100%);
+      color: #fdf7ea;
+      box-shadow: 0 18px 40px rgba(79, 5, 10, 0.4);
+    }
+
+    .btn-main:hover {
+      filter: brightness(1.03);
+      transform: translateY(-1px);
+      box-shadow: 0 22px 50px rgba(79, 5, 10, 0.55);
+    }
+
+    .btn-main:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(139, 98, 84, 0.45);
+      color: #8b6254;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(139, 98, 84, 0.07);
+    }
+
+    .required-note {
+      font-size: 11px;
+      color: #977560;
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    .required-note .asterisk {
+      color: var(--burgundy-soft);
+    }
+
+    .feedback {
+      margin-top: 10px;
+      font-size: 12px;
+      text-align: right;
+      min-height: 16px;
+    }
+
+    .feedback.success {
+      color: #256f3b;
+    }
+
+    .feedback.error {
+      color: #a12626;
+    }
+
+    @media (max-width: 980px) {
+      .product-item {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .form-wrapper {
+        padding: 24px 18px 20px;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-info {
+        text-align: left;
+      }
+
+      .grid-4,
+      .grid-3,
+      .grid-2,
+      .product-item,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .products-actions,
+      .actions {
+        justify-content: stretch;
+      }
+
+      .btn-main,
+      .btn-secondary,
+      .btn-icon {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-wrapper">
+    <header>
+      <div class="brand-block">
+        <div class="brand-name">NAJOY</div>
+        <div class="brand-subtitle">Lingeries &amp; Sensualidade</div>
+      </div>
+      <div class="header-info">
+        <div>Formulário interno de registro de vendas</div>
+        <div>
+          <a href="https://www.lojanajoy.com.br" target="_blank" rel="noopener noreferrer">
+            lojanajoy.com.br
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <h1>Registro de venda</h1>
+
+    <form id="form-venda">
+      <!-- DADOS GERAIS -->
+      <section class="card">
+        <div class="section-title">Dados do atendimento</div>
+
+        <div class="grid-4">
+          <div class="field">
+            <label for="atendente">Atendente<span class="required">*</span></label>
+            <select id="atendente" name="atendente" required>
+              <option value="">Selecione...</option>
+              <option value="Jannaina">Jannaina</option>
+              <option value="Joyce">Joyce</option>
+              <option value="Felipe">Felipe</option>
+              <option value="Helen">Helen</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+
+          <div class="field" id="atendente-outros-wrapper" style="display:none;">
+            <label for="atendente-outros">Informe o atendente</label>
+            <input type="text" id="atendente-outros" name="atendente_outros" placeholder="Digite o nome do atendente">
+          </div>
+
+          <div class="field">
+            <label for="cliente">Cliente<span class="required">*</span></label>
+            <input type="text" id="cliente" name="cliente" placeholder="Nome completo do cliente" autocomplete="off" required>
+            <div id="cliente-sugestoes" class="autocomplete-list"></div>
+          </div>
+
+          <div class="field">
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" name="telefone" placeholder="(  )  _____-____">
+            <span class="field-helper">Preenchido automaticamente se o cliente já estiver cadastrado.</span>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:14px;">
+          <div class="field">
+            <label for="data">Data<span class="required">*</span></label>
+            <input type="date" id="data" name="data" required>
+          </div>
+
+          <div class="field">
+            <label for="hora">Hora</label>
+            <input type="time" id="hora" name="hora">
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUTOS -->
+      <section class="card">
+        <div class="products-header">
+          <div class="section-title">Produtos</div>
+          <p>Adicione todos os itens da venda. Use o botão “+ produto” para incluir novos.</p>
+        </div>
+
+        <div id="products-list"></div>
+
+        <div class="field" style="margin-top:10px; max-width:230px; margin-left:auto;">
+          <label for="valor-total">Valor total da venda</label>
+          <input type="text" id="valor-total" name="valor_total" readonly placeholder="R$ 0,00">
+          <span class="field-helper">Calculado automaticamente pelos produtos.</span>
+        </div>
+
+        <div class="products-actions">
+          <button type="button" class="btn-icon" id="btn-add-product">
+            <span class="symbol">+</span> produto
+          </button>
+        </div>
+      </section>
+
+      <!-- ENTREGA, PAGAMENTO, ORIGEM E OBSERVAÇÕES -->
+      <section class="card">
+        <div class="section-title">Entrega &amp; detalhes</div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="tipo-entrega">Tipo de entrega<span class="required">*</span></label>
+            <select id="tipo-entrega" name="tipo_entrega" required>
+              <option value="">Selecione...</option>
+              <option value="aplicativos">Aplicativos</option>
+              <option value="entregador">Entregador</option>
+              <option value="retirada">Retirada</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="finalizado-por">Pedido foi finalizado por<span class="required">*</span></label>
+            <select id="finalizado-por" name="finalizado_por" required>
+              <option value="">Selecione...</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="site">Site</option>
+              <option value="facebook">Facebook</option>
+              <option value="instagram">Instagram</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:10px;">
+          <div class="field" id="entrega-outros-wrapper" style="display:none;">
+            <label for="entrega-outros">Informe o tipo de entrega (Outros)</label>
+            <input type="text" id="entrega-outros" name="tipo_entrega_outros" placeholder="Descreva a forma de entrega">
+          </div>
+
+          <div class="field" id="finalizado-outros-wrapper" style="display:none;">
+            <label for="finalizado-outros">Informe por onde o pedido foi finalizado</label>
+            <input type="text" id="finalizado-outros" name="finalizado_por_outros" placeholder="Descreva o canal utilizado">
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:14px;">
+          <div class="field">
+            <label for="forma-pagamento">Forma de pagamento<span class="required">*</span></label>
+            <select id="forma-pagamento" name="forma_pagamento" required>
+              <option value="">Selecione...</option>
+              <option value="pix">PIX</option>
+              <option value="dinheiro">Dinheiro</option>
+              <option value="debito">Débito</option>
+              <option value="credito">Crédito</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="origem-cliente">Origem do cliente<span class="required">*</span></label>
+            <select id="origem-cliente" name="origem_cliente" required>
+              <option value="">Selecione...</option>
+              <option value="cliente-fixo">Cliente fixo</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="marketplace">Marketplace</option>
+              <option value="olx">OLX</option>
+              <option value="grupos-vendas">Grupos de vendas</option>
+              <option value="anuncios">Anúncios</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:10px;">
+          <div class="field" id="pagamento-outros-wrapper" style="display:none;">
+            <label for="pagamento-outros">Informe a forma de pagamento (Outros)</label>
+            <input type="text" id="pagamento-outros" name="forma_pagamento_outros" placeholder="Descreva a forma de pagamento">
+          </div>
+
+          <div class="field" id="origem-outros-wrapper" style="display:none;">
+            <label for="origem-outros">Informe a origem do cliente (Outros)</label>
+            <input type="text" id="origem-outros" name="origem_outros" placeholder="Ex.: indicação, banner da loja, outro aplicativo...">
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label for="observacoes">Observações</label>
+          <textarea id="observacoes" name="observacoes" placeholder="Ex.: tamanho ajustado, presente com embalagem especial, combinações de entrega, observações do cliente etc. (opcional)"></textarea>
+        </div>
+
+        <div class="pill-note" style="margin-top:14px;">
+          Este formulário é para controle interno da NAJOY e não substitui a emissão de nota ou comprovante fiscal.
+        </div>
+      </section>
+
+      <!-- AÇÕES -->
+      <div class="actions">
+        <button type="reset" class="btn-secondary">limpar</button>
+        <button type="submit" class="btn-main" id="btn-submit">registrar venda</button>
+      </div>
+
+      <p class="required-note">
+        Campos marcados com <span class="asterisk">*</span> são obrigatórios.
+      </p>
+      <div id="feedback" class="feedback"></div>
+    </form>
+  </div>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjJloCxhkbxJnWLthXGv2ot6gAkwp1--PVr38dvKit1fHeV3mUqe9TVKTLE-DNKQCsQw/exec";
+
+    const SUBCATEGORIAS = {
+      lingeries: [
+        { value: "conjunto-de-lingeries", label: "Conjunto de lingeries" },
+        { value: "body", label: "Body" },
+        { value: "corset", label: "Corset" },
+        { value: "linha-noite", label: "Linha noite" },
+        { value: "fantasias", label: "Fantasias" },
+        { value: "com-bojo", label: "Com bojo" },
+        { value: "outros", label: "Outros" }
+      ],
+      "sexy-shop": [
+        { value: "geis-e-cremes-beijaveis", label: "Géis e cremes beijáveis" },
+        { value: "lubrificantes", label: "Lubrificantes" },
+        { value: "geis-e-cremes-excitantes", label: "Géis e cremes excitantes" },
+        { value: "proteses-e-vibradores", label: "Próteses e vibradores" },
+        { value: "produtos-para-anal", label: "Produtos para anal" },
+        { value: "produtos-para-oral", label: "Produtos para oral" },
+        { value: "estimulantes", label: "Estimulantes" },
+        { value: "perfumes", label: "Perfumes" },
+        { value: "perfumes-de-calcinha", label: "Perfumes de calcinha" },
+        { value: "raspadinhas", label: "Raspadinhas" },
+        { value: "outros", label: "Outros" }
+      ],
+      acessorios: [
+        { value: "outros", label: "Outros" }
+      ],
+      calcinhas: [],
+      "moda-praia": [
+        { value: "biquini", label: "Biquíni" },
+        { value: "saida-de-praia", label: "Saída de praia" },
+        { value: "outros", label: "Outros" }
+      ],
+      outros: []
+    };
+
+    const productsList = document.getElementById("products-list");
+    const addProductBtn = document.getElementById("btn-add-product");
+    const totalInput = document.getElementById("valor-total");
+
+    const atendenteSelect = document.getElementById("atendente");
+    const atendenteOutrosWrapper = document.getElementById("atendente-outros-wrapper");
+    const atendenteOutrosInput = document.getElementById("atendente-outros");
+
+    const clienteInput = document.getElementById("cliente");
+    const telefoneInput = document.getElementById("telefone");
+    const clienteSugestoes = document.getElementById("cliente-sugestoes");
+
+    const entregaSelect = document.getElementById("tipo-entrega");
+    const entregaOutrosWrapper = document.getElementById("entrega-outros-wrapper");
+    const entregaOutrosInput = document.getElementById("entrega-outros");
+
+    const finalizadoPorSelect = document.getElementById("finalizado-por");
+    const finalizadoOutrosWrapper = document.getElementById("finalizado-outros-wrapper");
+    const finalizadoOutrosInput = document.getElementById("finalizado-outros");
+
+    const formaPagamentoSelect = document.getElementById("forma-pagamento");
+    const pagamentoOutrosWrapper = document.getElementById("pagamento-outros-wrapper");
+    const pagamentoOutrosInput = document.getElementById("pagamento-outros");
+
+    const origemSelect = document.getElementById("origem-cliente");
+    const origemOutrosWrapper = document.getElementById("origem-outros-wrapper");
+    const origemOutrosInput = document.getElementById("origem-outros");
+
+    const form = document.getElementById("form-venda");
+    const feedbackEl = document.getElementById("feedback");
+    const submitBtn = document.getElementById("btn-submit");
+
+    let clientesCache = [];
+    let debounceTimer = null;
+
+    function hojeISO() {
+      const agora = new Date();
+      const ano = agora.getFullYear();
+      const mes = String(agora.getMonth() + 1).padStart(2, "0");
+      const dia = String(agora.getDate()).padStart(2, "0");
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    function horaAtual() {
+      const agora = new Date();
+      const hora = String(agora.getHours()).padStart(2, "0");
+      const min = String(agora.getMinutes()).padStart(2, "0");
+      return `${hora}:${min}`;
+    }
+
+    function normalizarTexto(texto) {
+      return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase();
+    }
+
+    function formatarTelefone(valor) {
+      let v = String(valor || "").replace(/\D/g, "").slice(0, 11);
+
+      if (v.length > 10) {
+        return v.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, "($1) $2-$3");
+      }
+      if (v.length > 6) {
+        return v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+      }
+      if (v.length > 2) {
+        return v.replace(/^(\d{2})(\d+)/, "($1) $2");
+      }
+      if (v.length > 0) {
+        return v.replace(/^(\d+)/, "($1");
+      }
+      return "";
+    }
+
+    function formatarMoedaBR(valor) {
+      return "R$ " + Number(valor || 0).toFixed(2).replace(".", ",");
+    }
+
+    function numeroBRParaFloat(valor) {
+      if (valor === null || valor === undefined || valor === "") return 0;
+      const texto = String(valor).trim().replace(/\s/g, "").replace("R$", "").replace(/\./g, "").replace(",", ".");
+      const numero = parseFloat(texto);
+      return isNaN(numero) ? 0 : numero;
+    }
+
+    function toggleOutros(selectEl, wrapperEl, inputEl) {
+      if (selectEl.value === "outros") {
+        wrapperEl.style.display = "flex";
+      } else {
+        wrapperEl.style.display = "none";
+        inputEl.value = "";
+      }
+    }
+
+    function hideSuggestions() {
+      clienteSugestoes.style.display = "none";
+      clienteSugestoes.innerHTML = "";
+    }
+
+    function showSuggestions(resultados) {
+      clienteSugestoes.innerHTML = "";
+
+      if (!resultados.length) {
+        hideSuggestions();
+        return;
+      }
+
+      resultados.forEach(cliente => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = `
+          <div>${cliente.nome}</div>
+          <small>${cliente.telefone || "Sem telefone cadastrado"}</small>
+        `;
+
+        item.addEventListener("click", () => {
+          clienteInput.value = cliente.nome || "";
+          telefoneInput.value = cliente.telefone || "";
+          hideSuggestions();
+        });
+
+        clienteSugestoes.appendChild(item);
+      });
+
+      clienteSugestoes.style.display = "block";
+    }
+
+    async function carregarClientes() {
+      try {
+        const response = await fetch(`${WEB_APP_URL}?action=clientes`);
+        const data = await response.json();
+
+        if (data.success && Array.isArray(data.clientes)) {
+          clientesCache = data.clientes;
+        }
+      } catch (error) {
+        console.error("Erro ao carregar clientes:", error);
+      }
+    }
+
+    function buscarClientesLocais(termo) {
+      const texto = normalizarTexto(termo);
+      if (!texto) return [];
+
+      return clientesCache
+        .filter(cliente => normalizarTexto(cliente.nome).includes(texto))
+        .slice(0, 8);
+    }
+
+    function preencherTelefoneSeClienteExistir() {
+      const nomeDigitado = normalizarTexto(clienteInput.value);
+      if (!nomeDigitado) return;
+
+      const clienteEncontrado = clientesCache.find(c => normalizarTexto(c.nome) === nomeDigitado);
+      if (clienteEncontrado && clienteEncontrado.telefone) {
+        telefoneInput.value = clienteEncontrado.telefone;
+      }
+    }
+
+    function createProductItem() {
+      const index = productsList.children.length;
+      const wrapper = document.createElement("div");
+      wrapper.className = "product-item";
+
+      wrapper.innerHTML = `
+        <div class="field">
+          <span class="pill-label">Categoria<span class="required">*</span></span>
+          <select data-role="categoria" name="produtos[${index}][categoria]" required>
+            <option value="">Selecione...</option>
+            <option value="lingeries">Lingeries</option>
+            <option value="sexy-shop">Sexy Shop</option>
+            <option value="acessorios">Acessórios</option>
+            <option value="calcinhas">Calcinhas</option>
+            <option value="moda-praia">Moda Praia</option>
+            <option value="outros">Outros</option>
+          </select>
+        </div>
+
+        <div class="field field-categoria-outros" style="display:none;">
+          <span class="pill-label">Categoria (Outros)</span>
+          <input type="text"
+                 data-role="categoria_outros"
+                 name="produtos[${index}][categoria_outros]"
+                 placeholder="Digite a categoria">
+        </div>
+
+        <div class="field field-subcategoria" style="display:none;">
+          <span class="pill-label">Subcategoria<span class="required">*</span></span>
+          <select data-role="subcategoria" name="produtos[${index}][subcategoria]">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+
+        <div class="field field-subcategoria-outros" style="display:none;">
+          <span class="pill-label">Subcategoria (Outros)</span>
+          <input type="text"
+                 data-role="subcategoria_outros"
+                 name="produtos[${index}][subcategoria_outros]"
+                 placeholder="Digite a subcategoria">
+        </div>
+
+        <div class="field">
+          <span class="pill-label">Nome do produto<span class="required">*</span></span>
+          <input type="text"
+                 data-role="nome"
+                 name="produtos[${index}][nome]"
+                 placeholder="Ex.: Conjunto renda vinho, calcinha fio dental, óleo corporal..."
+                 required>
+        </div>
+
+        <div class="field">
+          <span class="pill-label">Quantidade<span class="required">*</span></span>
+          <input type="number"
+                 min="1"
+                 step="1"
+                 value="1"
+                 data-role="quantidade"
+                 name="produtos[${index}][quantidade]"
+                 required>
+        </div>
+
+        <div class="field">
+          <span class="pill-label">Valor (R$)<span class="required">*</span></span>
+          <input type="number"
+                 step="0.01"
+                 min="0"
+                 inputmode="decimal"
+                 data-role="valor"
+                 name="produtos[${index}][valor]"
+                 placeholder="0,00"
+                 required>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-icon btn-icon--ghost btn-remove-product">
+            remover
+          </button>
+        </div>
+      `;
+
+      const categoriaSelect = wrapper.querySelector("[data-role='categoria']");
+      const categoriaOutrosWrapper = wrapper.querySelector(".field-categoria-outros");
+      const categoriaOutrosInput = wrapper.querySelector("[data-role='categoria_outros']");
+      const subcategoriaWrapper = wrapper.querySelector(".field-subcategoria");
+      const subcategoriaSelect = wrapper.querySelector("[data-role='subcategoria']");
+      const subcategoriaOutrosWrapper = wrapper.querySelector(".field-subcategoria-outros");
+      const subcategoriaOutrosInput = wrapper.querySelector("[data-role='subcategoria_outros']");
+      const valorInput = wrapper.querySelector("[data-role='valor']");
+      const quantidadeInput = wrapper.querySelector("[data-role='quantidade']");
+      const removeBtn = wrapper.querySelector(".btn-remove-product");
+
+      function resetSubcategoria() {
+        subcategoriaSelect.innerHTML = `<option value="">Selecione...</option>`;
+        subcategoriaSelect.required = false;
+        subcategoriaSelect.value = "";
+        subcategoriaOutrosInput.value = "";
+        subcategoriaWrapper.style.display = "none";
+        subcategoriaOutrosWrapper.style.display = "none";
+      }
+
+      function popularSubcategoria(categoria) {
+        resetSubcategoria();
+
+        if (categoria === "outros") {
+          return;
+        }
+
+        if (categoria === "calcinhas") {
+          return;
+        }
+
+        const opcoes = SUBCATEGORIAS[categoria] || [];
+        if (!opcoes.length) {
+          return;
+        }
+
+        subcategoriaWrapper.style.display = "flex";
+        subcategoriaSelect.required = true;
+
+        opcoes.forEach(opcao => {
+          const option = document.createElement("option");
+          option.value = opcao.value;
+          option.textContent = opcao.label;
+          subcategoriaSelect.appendChild(option);
+        });
+      }
+
+      categoriaSelect.addEventListener("change", () => {
+        if (categoriaSelect.value === "outros") {
+          categoriaOutrosWrapper.style.display = "flex";
+        } else {
+          categoriaOutrosWrapper.style.display = "none";
+          categoriaOutrosInput.value = "";
+        }
+
+        popularSubcategoria(categoriaSelect.value);
+      });
+
+      subcategoriaSelect.addEventListener("change", () => {
+        if (subcategoriaSelect.value === "outros") {
+          subcategoriaOutrosWrapper.style.display = "flex";
+        } else {
+          subcategoriaOutrosWrapper.style.display = "none";
+          subcategoriaOutrosInput.value = "";
+        }
+      });
+
+      valorInput.addEventListener("input", updateTotal);
+      quantidadeInput.addEventListener("input", updateTotal);
+
+      removeBtn.addEventListener("click", () => {
+        productsList.removeChild(wrapper);
+        renumberProducts();
+        updateTotal();
+      });
+
+      return wrapper;
+    }
+
+    function renumberProducts() {
+      Array.from(productsList.children).forEach((item, newIndex) => {
+        const campos = {
+          categoria: item.querySelector("[data-role='categoria']"),
+          categoria_outros: item.querySelector("[data-role='categoria_outros']"),
+          subcategoria: item.querySelector("[data-role='subcategoria']"),
+          subcategoria_outros: item.querySelector("[data-role='subcategoria_outros']"),
+          nome: item.querySelector("[data-role='nome']"),
+          quantidade: item.querySelector("[data-role='quantidade']"),
+          valor: item.querySelector("[data-role='valor']")
+        };
+
+        if (campos.categoria) campos.categoria.name = `produtos[${newIndex}][categoria]`;
+        if (campos.categoria_outros) campos.categoria_outros.name = `produtos[${newIndex}][categoria_outros]`;
+        if (campos.subcategoria) campos.subcategoria.name = `produtos[${newIndex}][subcategoria]`;
+        if (campos.subcategoria_outros) campos.subcategoria_outros.name = `produtos[${newIndex}][subcategoria_outros]`;
+        if (campos.nome) campos.nome.name = `produtos[${newIndex}][nome]`;
+        if (campos.quantidade) campos.quantidade.name = `produtos[${newIndex}][quantidade]`;
+        if (campos.valor) campos.valor.name = `produtos[${newIndex}][valor]`;
+      });
+    }
+
+    function updateTotal() {
+      let total = 0;
+
+      Array.from(productsList.children).forEach(item => {
+        const valorInput = item.querySelector("[data-role='valor']");
+        const quantidadeInput = item.querySelector("[data-role='quantidade']");
+
+        const valor = numeroBRParaFloat(valorInput ? valorInput.value : 0);
+        const quantidade = Math.max(parseInt(quantidadeInput ? quantidadeInput.value : 1, 10) || 1, 1);
+
+        total += valor * quantidade;
+      });
+
+      totalInput.value = total > 0 ? formatarMoedaBR(total) : "";
+    }
+
+    function resetCamposCondicionais() {
+      atendenteOutrosWrapper.style.display = "none";
+      entregaOutrosWrapper.style.display = "none";
+      finalizadoOutrosWrapper.style.display = "none";
+      pagamentoOutrosWrapper.style.display = "none";
+      origemOutrosWrapper.style.display = "none";
+
+      atendenteOutrosInput.value = "";
+      entregaOutrosInput.value = "";
+      finalizadoOutrosInput.value = "";
+      pagamentoOutrosInput.value = "";
+      origemOutrosInput.value = "";
+    }
+
+    function obterProdutosPayload() {
+      const produtos = [];
+
+      Array.from(productsList.children).forEach(item => {
+        const categoria = item.querySelector("[data-role='categoria']")?.value || "";
+        const categoriaOutros = item.querySelector("[data-role='categoria_outros']")?.value.trim() || "";
+        const subcategoria = item.querySelector("[data-role='subcategoria']")?.value || "";
+        const subcategoriaOutros = item.querySelector("[data-role='subcategoria_outros']")?.value.trim() || "";
+        const nome = item.querySelector("[data-role='nome']")?.value.trim() || "";
+        const quantidade = item.querySelector("[data-role='quantidade']")?.value || "1";
+        const valor = item.querySelector("[data-role='valor']")?.value || "";
+
+        if (categoria || categoriaOutros || subcategoria || subcategoriaOutros || nome || quantidade || valor) {
+          produtos.push({
+            categoria,
+            categoriaOutros,
+            subcategoria,
+            subcategoriaOutros,
+            nome,
+            quantidade,
+            valor
+          });
+        }
+      });
+
+      return produtos;
+    }
+
+    function validarAntesDeEnviar(payload) {
+      if (!payload.atendente) {
+        throw new Error("Selecione o atendente.");
+      }
+
+      if (payload.atendente === "outros" && !payload.atendenteOutros.trim()) {
+        throw new Error("Informe o nome do atendente em Outros.");
+      }
+
+      if (!payload.cliente.trim()) {
+        throw new Error("Informe o nome do cliente.");
+      }
+
+      if (!payload.data) {
+        throw new Error("Informe a data da venda.");
+      }
+
+      if (!payload.tipoEntrega) {
+        throw new Error("Selecione o tipo de entrega.");
+      }
+
+      if (payload.tipoEntrega === "outros" && !payload.tipoEntregaOutros.trim()) {
+        throw new Error("Informe o tipo de entrega em Outros.");
+      }
+
+      if (!payload.finalizadoPor) {
+        throw new Error("Selecione por onde o pedido foi finalizado.");
+      }
+
+      if (payload.finalizadoPor === "outros" && !payload.finalizadoPorOutros.trim()) {
+        throw new Error("Informe por onde o pedido foi finalizado em Outros.");
+      }
+
+      if (!payload.formaPagamento) {
+        throw new Error("Selecione a forma de pagamento.");
+      }
+
+      if (payload.formaPagamento === "outros" && !payload.formaPagamentoOutros.trim()) {
+        throw new Error("Informe a forma de pagamento em Outros.");
+      }
+
+      if (!payload.origemCliente) {
+        throw new Error("Selecione a origem do cliente.");
+      }
+
+      if (payload.origemCliente === "outros" && !payload.origemOutros.trim()) {
+        throw new Error("Informe a origem do cliente em Outros.");
+      }
+
+      if (!payload.produtos.length) {
+        throw new Error("Adicione pelo menos um produto.");
+      }
+    }
+
+    atendenteSelect.addEventListener("change", () => {
+      toggleOutros(atendenteSelect, atendenteOutrosWrapper, atendenteOutrosInput);
+    });
+
+    entregaSelect.addEventListener("change", () => {
+      toggleOutros(entregaSelect, entregaOutrosWrapper, entregaOutrosInput);
+    });
+
+    finalizadoPorSelect.addEventListener("change", () => {
+      toggleOutros(finalizadoPorSelect, finalizadoOutrosWrapper, finalizadoOutrosInput);
+    });
+
+    formaPagamentoSelect.addEventListener("change", () => {
+      toggleOutros(formaPagamentoSelect, pagamentoOutrosWrapper, pagamentoOutrosInput);
+    });
+
+    origemSelect.addEventListener("change", () => {
+      toggleOutros(origemSelect, origemOutrosWrapper, origemOutrosInput);
+    });
+
+    telefoneInput.addEventListener("input", (e) => {
+      e.target.value = formatarTelefone(e.target.value);
+    });
+
+    clienteInput.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+
+      debounceTimer = setTimeout(() => {
+        const termo = clienteInput.value.trim();
+
+        if (!termo) {
+          hideSuggestions();
+          return;
+        }
+
+        const resultados = buscarClientesLocais(termo);
+        showSuggestions(resultados);
+      }, 120);
+    });
+
+    clienteInput.addEventListener("blur", () => {
+      setTimeout(() => {
+        preencherTelefoneSeClienteExistir();
+        hideSuggestions();
+      }, 180);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!clienteSugestoes.contains(e.target) && e.target !== clienteInput) {
+        hideSuggestions();
+      }
+    });
+
+    addProductBtn.addEventListener("click", () => {
+      const item = createProductItem();
+      productsList.appendChild(item);
+    });
+
+    form.addEventListener("reset", () => {
+      setTimeout(() => {
+        productsList.innerHTML = "";
+        productsList.appendChild(createProductItem());
+        resetCamposCondicionais();
+        hideSuggestions();
+        totalInput.value = "";
+        feedbackEl.textContent = "";
+        feedbackEl.className = "feedback";
+        document.getElementById("data").value = hojeISO();
+        document.getElementById("hora").value = horaAtual();
+      }, 0);
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      feedbackEl.textContent = "";
+      feedbackEl.className = "feedback";
+
+      const payload = {
+        atendente: atendenteSelect.value,
+        atendenteOutros: atendenteOutrosInput.value.trim(),
+        cliente: clienteInput.value.trim(),
+        telefone: telefoneInput.value.trim(),
+        data: document.getElementById("data").value,
+        hora: document.getElementById("hora").value,
+        tipoEntrega: entregaSelect.value,
+        tipoEntregaOutros: entregaOutrosInput.value.trim(),
+        observacoes: document.getElementById("observacoes").value.trim(),
+        formaPagamento: formaPagamentoSelect.value,
+        formaPagamentoOutros: pagamentoOutrosInput.value.trim(),
+        origemCliente: origemSelect.value,
+        origemOutros: origemOutrosInput.value.trim(),
+        finalizadoPor: finalizadoPorSelect.value,
+        finalizadoPorOutros: finalizadoOutrosInput.value.trim(),
+        produtos: obterProdutosPayload()
+      };
+
+      try {
+        validarAntesDeEnviar(payload);
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "enviando...";
+        feedbackEl.textContent = "Enviando registro para a planilha...";
+
+        const response = await fetch(WEB_APP_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const resultado = await response.json();
+
+        if (!resultado.success) {
+          throw new Error(resultado.error || "Ocorreu um erro ao registrar a venda.");
+        }
+
+        feedbackEl.textContent = "Venda registrada com sucesso!";
+        feedbackEl.classList.add("success");
+
+        form.reset();
+        await carregarClientes();
+      } catch (error) {
+        console.error(error);
+        feedbackEl.textContent = error.message || "Ocorreu um erro ao enviar para a planilha.";
+        feedbackEl.classList.add("error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "registrar venda";
+      }
+    });
+
+    async function init() {
+      document.getElementById("data").value = hojeISO();
+      document.getElementById("hora").value = horaAtual();
+
+      if (productsList.children.length === 0) {
+        productsList.appendChild(createProductItem());
+      }
+
+      await carregarClientes();
+      updateTotal();
+    }
+
+    init();
+  </script>
+</body>
+</html>
