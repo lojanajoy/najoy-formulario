@@ -368,13 +368,6 @@
       margin-top: 6px;
     }
 
-    .footer-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      align-items: start;
-    }
-
     .pill-note {
       font-size: 11px;
       background: rgba(255, 253, 246, 0.6);
@@ -480,8 +473,7 @@
       .grid-4,
       .grid-3,
       .grid-2,
-      .product-item,
-      .footer-grid {
+      .product-item {
         grid-template-columns: 1fr;
       }
 
@@ -520,7 +512,6 @@
     <h1>Registro de venda</h1>
 
     <form id="form-venda">
-      <!-- DADOS GERAIS -->
       <section class="card">
         <div class="section-title">Dados do atendimento</div>
 
@@ -568,7 +559,6 @@
         </div>
       </section>
 
-      <!-- PRODUTOS -->
       <section class="card">
         <div class="products-header">
           <div class="section-title">Produtos</div>
@@ -590,7 +580,6 @@
         </div>
       </section>
 
-      <!-- ENTREGA, PAGAMENTO, ORIGEM E OBSERVAÇÕES -->
       <section class="card">
         <div class="section-title">Entrega &amp; detalhes</div>
 
@@ -683,7 +672,6 @@
         </div>
       </section>
 
-      <!-- AÇÕES -->
       <div class="actions">
         <button type="reset" class="btn-secondary">limpar</button>
         <button type="submit" class="btn-main" id="btn-submit">registrar venda</button>
@@ -999,18 +987,11 @@
       function popularSubcategoria(categoria) {
         resetSubcategoria();
 
-        if (categoria === "outros") {
-          return;
-        }
-
-        if (categoria === "calcinhas") {
-          return;
-        }
+        if (categoria === "outros") return;
+        if (categoria === "calcinhas") return;
 
         const opcoes = SUBCATEGORIAS[categoria] || [];
-        if (!opcoes.length) {
-          return;
-        }
+        if (!opcoes.length) return;
 
         subcategoriaWrapper.style.display = "flex";
         subcategoriaSelect.required = true;
@@ -1296,7 +1277,7 @@
         const response = await fetch(WEB_APP_URL, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain;charset=utf-8"
           },
           body: JSON.stringify(payload)
         });
