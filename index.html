@@ -905,6 +905,7 @@
     function syncClientFromPhone() {
       const normalized = normalizePhone(telefoneInput.value);
       if (!normalized) {
+        clienteInput.value = '';
         clienteEncontradoEl.textContent = 'Opcional';
         clienteEncontradoEl.className = 'field-helper';
         return;
@@ -915,12 +916,13 @@
       );
 
       if (exact) {
-        clienteInput.value = exact.cliente || clienteInput.value;
-        clienteEncontradoEl.textContent = `Cliente encontrado: ${exact.cliente}`;
+        clienteInput.value = exact.cliente || '';
+        clienteEncontradoEl.textContent = 'Cliente reconhecido automaticamente.';
         clienteEncontradoEl.className = 'field-helper field-helper--success';
         return;
       }
 
+      clienteInput.value = '';
       const inputVariants = getPhoneVariants(normalized);
       const suggestions = clientsCache
         .filter(client => {
