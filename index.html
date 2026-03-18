@@ -763,6 +763,7 @@
       "rosa": "Rosa",
       "roxo": "Roxo",
       "verde": "Verde",
+      "nao": "Não",
       "outros": "Outros"
     };
 
@@ -807,6 +808,36 @@
 
     function normalizePhone(value) {
       return String(value || '').replace(/\D/g, '');
+    }
+
+    function getPhoneVariants(value) {
+      const normalized = normalizePhone(value);
+      if (!normalized) return [];
+      const variants = new Set([normalized]);
+
+      if (normalized.startsWith('55') && normalized.length > 11) {
+        variants.add(normalized.slice(2));
+      }
+
+      if (!normalized.startsWith('55') && (normalized.length === 10 || normalized.length === 11)) {
+        variants.add('55' + normalized);
+      }
+
+      if (normalized.length === 10) {
+        variants.add(normalized.slice(0, 2) + '9' + normalized.slice(2));
+      }
+
+      if (normalized.length === 11 && normalized[2] === '9') {
+        variants.add(normalized.slice(0, 2) + normalized.slice(3));
+      }
+
+      return Array.from(variants).filter(Boolean);
+    }
+
+    function phonesMatch(phoneA, phoneB) {
+      const a = getPhoneVariants(phoneA);
+      const b = getPhoneVariants(phoneB);
+      return a.some(item => b.includes(item));
     }
 
     function formatPhoneDisplay(value) {
@@ -879,7 +910,10 @@
         return;
       }
 
-      const exact = clientsCache.find(client => client.telefoneNormalizado === normalized);
+      const exact = clientsCache.find(client =>
+        phonesMatch(client.telefoneNormalizado || client.telefone, normalized)
+      );
+
       if (exact) {
         clienteInput.value = exact.cliente || clienteInput.value;
         clienteEncontradoEl.textContent = `Cliente encontrado: ${exact.cliente}`;
@@ -887,8 +921,12 @@
         return;
       }
 
+      const inputVariants = getPhoneVariants(normalized);
       const suggestions = clientsCache
-        .filter(client => client.telefoneNormalizado && client.telefoneNormalizado.includes(normalized))
+        .filter(client => {
+          const clientPhone = client.telefoneNormalizado || client.telefone || '';
+          return inputVariants.some(variant => normalizePhone(clientPhone).includes(variant) || variant.includes(normalizePhone(clientPhone)));
+        })
         .slice(0, 3)
         .map(client => client.cliente)
         .filter(Boolean);
@@ -934,9 +972,9 @@
       return { categoryText, subText, colorText };
     }
 
-    function buildSubcategoryOptions(categoryValue, selectEl) {
+    function buildSubcategoryOptions(categoryValue, selectEl, selectedValue = '') {
       const categoryOptions = SUBCATEGORY_MAP[categoryValue] || [];
-      const previousValue = selectEl.value;
+      const keepValue = selectedValue || '';
       selectEl.innerHTML = '';
 
       const defaultOption = document.createElement('option');
@@ -951,12 +989,13 @@
         selectEl.appendChild(option);
       });
 
-      const stillExists = categoryOptions.some(optionData => optionData.value === previousValue);
-      selectEl.value = stillExists ? previousValue : '';
+      const stillExists = categoryOptions.some(optionData => optionData.value === keepValue);
+      selectEl.value = stillExists ? keepValue : '';
       selectEl.disabled = !categoryOptions.length || categoryValue === 'outros';
     }
 
-    function updateProductDynamicFields(wrapper) {
+    function updateProductDynamicFields(wrapper, options = {}) {
+      const { rebuildSubcategory = false, selectedSubcategory = null } = options;
       const categoriaSelect = wrapper.querySelector("[data-role='categoria']");
       const subcategoriaSelect = wrapper.querySelector("[data-role='subcategoria']");
       const catOutrosWrapper = wrapper.querySelector(".product-cat-outros");
@@ -969,7 +1008,10 @@
       const corOutrosInput = wrapper.querySelector("[data-role='cor_outros']");
 
       const categoria = categoriaSelect.value;
-      buildSubcategoryOptions(categoria, subcategoriaSelect);
+      if (rebuildSubcategory) {
+        const valueToKeep = selectedSubcategory !== null ? selectedSubcategory : subcategoriaSelect.value;
+        buildSubcategoryOptions(categoria, subcategoriaSelect, valueToKeep);
+      }
 
       if (categoria === 'outros') {
         catOutrosWrapper.style.display = 'block';
@@ -1069,6 +1111,7 @@
             <option value="rosa">Rosa</option>
             <option value="roxo">Roxo</option>
             <option value="verde">Verde</option>
+            <option value="nao">Não</option>
             <option value="outros">Outros</option>
           </select>
         </div>
@@ -1126,19 +1169,18 @@
       wrapper.querySelector("[data-role='quantidade']").addEventListener('input', updateTotal);
 
       wrapper.querySelector("[data-role='categoria']").addEventListener('change', () => {
-        wrapper.querySelector("[data-role='subcategoria']").value = '';
-        updateProductDynamicFields(wrapper);
+        updateProductDynamicFields(wrapper, { rebuildSubcategory: true, selectedSubcategory: '' });
       });
 
       wrapper.querySelector("[data-role='subcategoria']").addEventListener('change', () => {
-        updateProductDynamicFields(wrapper);
+        updateProductDynamicFields(wrapper, { rebuildSubcategory: false });
       });
 
       wrapper.querySelector("[data-role='cor']").addEventListener('change', () => {
-        updateProductDynamicFields(wrapper);
+        updateProductDynamicFields(wrapper, { rebuildSubcategory: false });
       });
 
-      updateProductDynamicFields(wrapper);
+      updateProductDynamicFields(wrapper, { rebuildSubcategory: true, selectedSubcategory: '' });
       return wrapper;
     }
 
@@ -1250,21 +1292,28 @@
     }
 
     function loadClientRegistry() {
-      if (!WEB_APP_URL || WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbzxRa6GJ-h3sgWw_FMu6a6Rqnl5yz8BqVMf1QQIZVZPBvPyKCzL0he0TwUKuUeDt058ZA/exec') return;
       const script = document.createElement('script');
       script.src = `${WEB_APP_URL}?action=getClients&callback=handleClients&ts=${Date.now()}`;
       script.async = true;
+      script.onerror = () => {
+        clienteEncontradoEl.textContent = 'Não foi possível carregar a lista de clientes.';
+        clienteEncontradoEl.className = 'field-helper';
+      };
       document.body.appendChild(script);
     }
 
     window.handleClients = function(response) {
       if (!response || !response.clients) return;
-      clientsCache = response.clients.map(client => ({
-        cliente: client.cliente || '',
-        telefone: client.telefone || '',
-        telefoneNormalizado: normalizePhone(client.telefone || client.telefoneNormalizado || '')
-      }));
+      clientsCache = response.clients.map(client => {
+        const telefoneBruto = String(client.telefone || client.telefoneNormalizado || '').trim();
+        return {
+          cliente: client.cliente || '',
+          telefone: telefoneBruto,
+          telefoneNormalizado: normalizePhone(client.telefoneNormalizado || client.telefone || '')
+        };
+      });
       refreshClientDatalist();
+      syncClientFromPhone();
     };
 
     addProductBtn.addEventListener('click', () => {
@@ -1313,7 +1362,7 @@
       feedbackEl.textContent = "";
       feedbackEl.className = "feedback";
 
-      if (!WEB_APP_URL || WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbzxRa6GJ-h3sgWw_FMu6a6Rqnl5yz8BqVMf1QQIZVZPBvPyKCzL0he0TwUKuUeDt058ZA/exec') {
+      if (!WEB_APP_URL) {
         feedbackEl.textContent = "Configure o WEB_APP_URL antes de publicar.";
         feedbackEl.classList.add("error");
         return;
