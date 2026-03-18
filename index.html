@@ -1291,30 +1291,48 @@
       refreshClientDatalist();
     }
 
+    function applyClientsResponse(response) {
+      if (!response || !Array.isArray(response.clients)) {
+        clienteEncontradoEl.textContent = 'Não foi possível carregar a lista de clientes.';
+        clienteEncontradoEl.className = 'field-helper';
+        return;
+      }
+
+      clientsCache = response.clients.map(client => {
+        const telefoneBruto = String(client.telefone || client.telefoneNormalizado || '').trim();
+        return {
+          cliente: String(client.cliente || '').trim(),
+          telefone: telefoneBruto,
+          telefoneNormalizado: normalizePhone(client.telefoneNormalizado || client.telefone || '')
+        };
+      }).filter(client => client.cliente || client.telefoneNormalizado);
+
+      refreshClientDatalist();
+      syncClientFromPhone();
+    }
+
     function loadClientRegistry() {
+      const callbackName = `handleClients_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
       const script = document.createElement('script');
-      script.src = `${WEB_APP_URL}?action=getClients&callback=handleClients&ts=${Date.now()}`;
+
+      window[callbackName] = function(response) {
+        try {
+          applyClientsResponse(response);
+        } finally {
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+      };
+
+      script.src = `${WEB_APP_URL}?action=getClients&callback=${callbackName}&ts=${Date.now()}`;
       script.async = true;
       script.onerror = () => {
+        delete window[callbackName];
         clienteEncontradoEl.textContent = 'Não foi possível carregar a lista de clientes.';
         clienteEncontradoEl.className = 'field-helper';
       };
       document.body.appendChild(script);
     }
-
-    window.handleClients = function(response) {
-      if (!response || !response.clients) return;
-      clientsCache = response.clients.map(client => {
-        const telefoneBruto = String(client.telefone || client.telefoneNormalizado || '').trim();
-        return {
-          cliente: client.cliente || '',
-          telefone: telefoneBruto,
-          telefoneNormalizado: normalizePhone(client.telefoneNormalizado || client.telefone || '')
-        };
-      });
-      refreshClientDatalist();
-      syncClientFromPhone();
-    };
 
     addProductBtn.addEventListener('click', () => {
       productsList.appendChild(createProductItem());
