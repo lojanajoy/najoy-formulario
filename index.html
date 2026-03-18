@@ -936,6 +936,7 @@
 
     function buildSubcategoryOptions(categoryValue, selectEl) {
       const categoryOptions = SUBCATEGORY_MAP[categoryValue] || [];
+      const previousValue = selectEl.value;
       selectEl.innerHTML = '';
 
       const defaultOption = document.createElement('option');
@@ -950,6 +951,8 @@
         selectEl.appendChild(option);
       });
 
+      const stillExists = categoryOptions.some(optionData => optionData.value === previousValue);
+      selectEl.value = stillExists ? previousValue : '';
       selectEl.disabled = !categoryOptions.length || categoryValue === 'outros';
     }
 
