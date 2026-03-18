@@ -16,6 +16,7 @@
       --border-soft: #dcc7a0;
       --shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.08);
       --radius-lg: 20px;
+      --success: #256f3b;
     }
 
     * {
@@ -40,13 +41,13 @@
 
     .form-wrapper {
       width: 100%;
-      max-width: 980px;
+      max-width: 1180px;
       background-color: #fdf9ee;
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-soft);
       padding: 32px 28px 28px;
       position: relative;
-      overflow: visible;
+      overflow: hidden;
       border: 1px solid rgba(205, 160, 70, 0.35);
     }
 
@@ -138,12 +139,6 @@
       border: 1px solid var(--border-soft);
     }
 
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px 16px;
-    }
-
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -174,7 +169,8 @@
       color: #7b5a4d;
     }
 
-    label .required {
+    label .required,
+    .pill-label .required {
       color: var(--burgundy-soft);
       margin-left: 2px;
     }
@@ -231,45 +227,12 @@
     .field-helper {
       font-size: 11px;
       color: #a1806a;
+      min-height: 14px;
     }
 
-    .autocomplete-list {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0;
-      right: 0;
-      background: #fffaf0;
-      border: 1px solid var(--border-soft);
-      border-radius: 14px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      z-index: 50;
-      max-height: 220px;
-      overflow-y: auto;
-      display: none;
-    }
-
-    .autocomplete-item {
-      padding: 10px 12px;
-      cursor: pointer;
-      border-bottom: 1px solid rgba(220, 199, 160, 0.35);
-      font-size: 13px;
-      color: var(--text-main);
-      background: #fffaf0;
-    }
-
-    .autocomplete-item:last-child {
-      border-bottom: none;
-    }
-
-    .autocomplete-item:hover {
-      background: #f8f0db;
-    }
-
-    .autocomplete-item small {
-      display: block;
-      color: #9d7c69;
-      font-size: 11px;
-      margin-top: 3px;
+    .field-helper--success {
+      color: var(--success);
+      font-weight: 700;
     }
 
     .products-header {
@@ -287,10 +250,17 @@
 
     .product-item {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns:
+        minmax(140px, 1.35fr)
+        minmax(140px, 1.35fr)
+        minmax(190px, 1.8fr)
+        minmax(100px, 0.75fr)
+        minmax(170px, 1.25fr)
+        minmax(120px, 0.9fr)
+        auto;
       gap: 10px 12px;
       align-items: end;
-      padding: 10px 12px;
+      padding: 12px;
       margin-bottom: 8px;
       border-radius: 12px;
       background: rgba(246, 238, 220, 0.8);
@@ -298,11 +268,34 @@
       position: relative;
     }
 
+    .product-col-categoria,
+    .product-col-subcategoria,
+    .product-col-nome,
+    .product-col-quantidade,
+    .product-col-cor,
+    .product-col-valor,
+    .product-col-remove {
+      grid-column: auto;
+      min-width: 0;
+    }
+
+    .product-col-remove {
+      display: flex;
+      align-items: end;
+      justify-content: flex-end;
+    }
+
+
     .product-item:first-of-type {
       margin-top: 4px;
     }
 
+    
     .pill-label {
+      display: block;
+      width: 100%;
+      white-space: normal;
+      line-height: 1.2;
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.14em;
@@ -325,7 +318,7 @@
       gap: 8px;
       box-shadow: 0 10px 25px rgba(107, 17, 21, 0.2);
       white-space: nowrap;
-      transition: .2s ease;
+      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
     }
 
     .btn-icon span.symbol {
@@ -359,13 +352,19 @@
       justify-content: flex-end;
       gap: 8px;
       margin-top: 8px;
-      grid-column: 1 / -1;
     }
 
     .products-actions {
       display: flex;
       justify-content: flex-end;
       margin-top: 6px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
     }
 
     .pill-note {
@@ -393,7 +392,7 @@
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.22em;
-      transition: .2s ease;
+      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
     }
 
     .btn-main {
@@ -406,12 +405,6 @@
       filter: brightness(1.03);
       transform: translateY(-1px);
       box-shadow: 0 22px 50px rgba(79, 5, 10, 0.55);
-    }
-
-    .btn-main:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
     }
 
     .btn-secondary {
@@ -450,9 +443,43 @@
       color: #a12626;
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 1080px) {
       .product-item {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .product-col-categoria,
+      .product-col-subcategoria,
+      .product-col-nome,
+      .product-col-cor { grid-column: auto; }
+
+      .product-col-quantidade,
+      .product-col-valor,
+      .product-col-remove { grid-column: auto; }
+
+      .product-item .btn-row {
+        grid-column: auto;
+        margin-top: 0;
+      }
+    }
+
+    @media (max-width: 840px) {
+      .product-item {
+        grid-template-columns: 1fr;
+      }
+
+      .product-col-categoria,
+      .product-col-subcategoria,
+      .product-col-nome,
+      .product-col-quantidade,
+      .product-col-cor,
+      .product-col-valor,
+      .product-col-remove {
+        grid-column: auto;
+      }
+
+      .product-col-remove {
+        justify-content: flex-start;
       }
     }
 
@@ -470,11 +497,15 @@
         text-align: left;
       }
 
-      .grid-4,
       .grid-3,
       .grid-2,
-      .product-item {
+      .product-item,
+      .footer-grid {
         grid-template-columns: 1fr;
+      }
+
+      .product-item {
+        padding-bottom: 10px;
       }
 
       .products-actions,
@@ -501,11 +532,9 @@
       </div>
       <div class="header-info">
         <div>Formulário interno de registro de vendas</div>
-        <div>
-          <a href="https://www.lojanajoy.com.br" target="_blank" rel="noopener noreferrer">
-            lojanajoy.com.br
-          </a>
-        </div>
+        <div><a href="https://www.lojanajoy.com.br" target="_blank" rel="noopener noreferrer">
+          lojanajoy.com.br
+        </a></div>
       </div>
     </header>
 
@@ -514,8 +543,7 @@
     <form id="form-venda">
       <section class="card">
         <div class="section-title">Dados do atendimento</div>
-
-        <div class="grid-4">
+        <div class="grid-3">
           <div class="field">
             <label for="atendente">Atendente<span class="required">*</span></label>
             <select id="atendente" name="atendente" required>
@@ -528,22 +556,25 @@
             </select>
           </div>
 
-          <div class="field" id="atendente-outros-wrapper" style="display:none;">
-            <label for="atendente-outros">Informe o atendente</label>
-            <input type="text" id="atendente-outros" name="atendente_outros" placeholder="Digite o nome do atendente">
-          </div>
-
           <div class="field">
             <label for="cliente">Cliente<span class="required">*</span></label>
-            <input type="text" id="cliente" name="cliente" placeholder="Nome completo do cliente" autocomplete="off" required>
-            <div id="cliente-sugestoes" class="autocomplete-list"></div>
+            <input type="text" id="cliente" name="cliente"
+                   placeholder="Nome completo do cliente" required>
           </div>
 
           <div class="field">
             <label for="telefone">Telefone</label>
-            <input type="tel" id="telefone" name="telefone" placeholder="(  )  _____-____">
-            <span class="field-helper">Preenchido automaticamente se o cliente já estiver cadastrado.</span>
+            <input type="tel" id="telefone" name="telefone" list="telefones-cadastrados"
+                   placeholder="(  )  _____-____">
+            <datalist id="telefones-cadastrados"></datalist>
+            <span id="cliente-encontrado" class="field-helper">Opcional</span>
           </div>
+        </div>
+
+        <div class="field" id="atendente-outros-wrapper" style="margin-top:10px; display:none;">
+          <label for="atendente-outros">Informe o atendente (Outros)</label>
+          <input type="text" id="atendente-outros" name="atendente_outros"
+                 placeholder="Digite o nome do atendente">
         </div>
 
         <div class="grid-2" style="margin-top:14px;">
@@ -553,7 +584,7 @@
           </div>
 
           <div class="field">
-            <label for="hora">Hora</label>
+           <label for="hora">Hora</label>
             <input type="time" id="hora" name="hora">
           </div>
         </div>
@@ -575,7 +606,7 @@
 
         <div class="products-actions">
           <button type="button" class="btn-icon" id="btn-add-product">
-            <span class="symbol">+</span> produto
+            <span class="symbol">+ </span> produto
           </button>
         </div>
       </section>
@@ -593,11 +624,14 @@
               <option value="retirada">Retirada</option>
               <option value="outros">Outros</option>
             </select>
+            <span class="field-helper">
+              Se necessário, detalhe em observações ou em “Outros”.
+            </span>
           </div>
 
           <div class="field">
-            <label for="finalizado-por">Pedido foi finalizado por<span class="required">*</span></label>
-            <select id="finalizado-por" name="finalizado_por" required>
+            <label for="pedido-finalizado-por">Pedido foi finalizado por<span class="required">*</span></label>
+            <select id="pedido-finalizado-por" name="pedido_finalizado_por" required>
               <option value="">Selecione...</option>
               <option value="whatsapp">WhatsApp</option>
               <option value="site">Site</option>
@@ -608,16 +642,10 @@
           </div>
         </div>
 
-        <div class="grid-2" style="margin-top:10px;">
-          <div class="field" id="entrega-outros-wrapper" style="display:none;">
-            <label for="entrega-outros">Informe o tipo de entrega (Outros)</label>
-            <input type="text" id="entrega-outros" name="tipo_entrega_outros" placeholder="Descreva a forma de entrega">
-          </div>
-
-          <div class="field" id="finalizado-outros-wrapper" style="display:none;">
-            <label for="finalizado-outros">Informe por onde o pedido foi finalizado</label>
-            <input type="text" id="finalizado-outros" name="finalizado_por_outros" placeholder="Descreva o canal utilizado">
-          </div>
+        <div class="field" id="entrega-outros-wrapper" style="margin-top:10px; display:none;">
+          <label for="entrega-outros">Informe o tipo de entrega (Outros)</label>
+          <input type="text" id="entrega-outros" name="tipo_entrega_outros"
+                 placeholder="Descreva a forma de entrega">
         </div>
 
         <div class="grid-2" style="margin-top:14px;">
@@ -650,21 +678,28 @@
           </div>
         </div>
 
-        <div class="grid-2" style="margin-top:10px;">
-          <div class="field" id="pagamento-outros-wrapper" style="display:none;">
-            <label for="pagamento-outros">Informe a forma de pagamento (Outros)</label>
-            <input type="text" id="pagamento-outros" name="forma_pagamento_outros" placeholder="Descreva a forma de pagamento">
-          </div>
-
-          <div class="field" id="origem-outros-wrapper" style="display:none;">
-            <label for="origem-outros">Informe a origem do cliente (Outros)</label>
-            <input type="text" id="origem-outros" name="origem_outros" placeholder="Ex.: indicação, banner da loja, outro aplicativo...">
-          </div>
-        </div>
-
         <div class="field" style="margin-top:14px;">
           <label for="observacoes">Observações</label>
-          <textarea id="observacoes" name="observacoes" placeholder="Ex.: tamanho ajustado, presente com embalagem especial, combinações de entrega, observações do cliente etc. (opcional)"></textarea>
+          <textarea id="observacoes" name="observacoes"
+                    placeholder="Ex.: tamanho ajustado, presente com embalagem especial, combinações de entrega, observações do cliente etc. (opcional)"></textarea>
+        </div>
+
+        <div class="field" id="pagamento-outros-wrapper" style="margin-top:10px; display:none;">
+          <label for="pagamento-outros">Informe a forma de pagamento (Outros)</label>
+          <input type="text" id="pagamento-outros" name="forma_pagamento_outros"
+                 placeholder="Descreva a forma de pagamento">
+        </div>
+
+        <div class="field" id="origem-outros-wrapper" style="margin-top:10px; display:none;">
+          <label for="origem-outros">Informe o local (Outros)</label>
+          <input type="text" id="origem-outros" name="origem_outros"
+                 placeholder="Ex.: indicação, banner da loja, outro aplicativo...">
+        </div>
+
+        <div class="field" id="pedido-finalizado-outros-wrapper" style="margin-top:10px; display:none;">
+          <label for="pedido-finalizado-outros">Informe como o pedido foi finalizado (Outros)</label>
+          <input type="text" id="pedido-finalizado-outros" name="pedido_finalizado_por_outros"
+                 placeholder="Descreva o canal final">
         </div>
 
         <div class="pill-note" style="margin-top:14px;">
@@ -674,7 +709,7 @@
 
       <div class="actions">
         <button type="reset" class="btn-secondary">limpar</button>
-        <button type="submit" class="btn-main" id="btn-submit">registrar venda</button>
+        <button type="submit" class="btn-main">registrar venda</button>
       </div>
 
       <p class="required-note">
@@ -685,11 +720,11 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxjJloCxhkbxJnWLthXGv2ot6gAkwp1--PVr38dvKit1fHeV3mUqe9TVKTLE-DNKQCsQw/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzxRa6GJ-h3sgWw_FMu6a6Rqnl5yz8BqVMf1QQIZVZPBvPyKCzL0he0TwUKuUeDt058ZA/exec";
 
-    const SUBCATEGORIAS = {
-      lingeries: [
-        { value: "conjunto-de-lingeries", label: "Conjunto de lingeries" },
+    const SUBCATEGORY_MAP = {
+      "lingeries": [
+        { value: "conjunto-lingeries", label: "Conjunto de lingeries" },
         { value: "body", label: "Body" },
         { value: "corset", label: "Corset" },
         { value: "linha-noite", label: "Linha noite" },
@@ -698,243 +733,319 @@
         { value: "outros", label: "Outros" }
       ],
       "sexy-shop": [
-        { value: "geis-e-cremes-beijaveis", label: "Géis e cremes beijáveis" },
         { value: "lubrificantes", label: "Lubrificantes" },
-        { value: "geis-e-cremes-excitantes", label: "Géis e cremes excitantes" },
-        { value: "proteses-e-vibradores", label: "Próteses e vibradores" },
-        { value: "produtos-para-anal", label: "Produtos para anal" },
-        { value: "produtos-para-oral", label: "Produtos para oral" },
-        { value: "estimulantes", label: "Estimulantes" },
+        { value: "proteses-vibradores", label: "Próteses e vibradores" },
         { value: "perfumes", label: "Perfumes" },
-        { value: "perfumes-de-calcinha", label: "Perfumes de calcinha" },
-        { value: "raspadinhas", label: "Raspadinhas" },
         { value: "outros", label: "Outros" }
       ],
-      acessorios: [
-        { value: "outros", label: "Outros" }
-      ],
-      calcinhas: [],
       "moda-praia": [
         { value: "biquini", label: "Biquíni" },
-        { value: "saida-de-praia", label: "Saída de praia" },
+        { value: "saida-praia", label: "Saída de praia" },
         { value: "outros", label: "Outros" }
       ],
-      outros: []
+      "acessorios": [],
+      "calcinhas": []
     };
 
-    const productsList = document.getElementById("products-list");
-    const addProductBtn = document.getElementById("btn-add-product");
-    const totalInput = document.getElementById("valor-total");
+    const CATEGORY_LABELS = {
+      "lingeries": "Lingeries",
+      "sexy-shop": "Sexy shop",
+      "acessorios": "Acessórios",
+      "calcinhas": "Calcinhas",
+      "moda-praia": "Moda praia",
+      "outros": "Outros"
+    };
 
-    const atendenteSelect = document.getElementById("atendente");
-    const atendenteOutrosWrapper = document.getElementById("atendente-outros-wrapper");
-    const atendenteOutrosInput = document.getElementById("atendente-outros");
+    const COLOR_LABELS = {
+      "preto": "Preto",
+      "vermelho": "Vermelho",
+      "branco": "Branco",
+      "rosa": "Rosa",
+      "roxo": "Roxo",
+      "verde": "Verde",
+      "outros": "Outros"
+    };
 
-    const clienteInput = document.getElementById("cliente");
-    const telefoneInput = document.getElementById("telefone");
-    const clienteSugestoes = document.getElementById("cliente-sugestoes");
+    const productsList = document.getElementById('products-list');
+    const addProductBtn = document.getElementById('btn-add-product');
+    const totalInput = document.getElementById('valor-total');
+    const form = document.getElementById('form-venda');
+    const feedbackEl = document.getElementById('feedback');
 
-    const entregaSelect = document.getElementById("tipo-entrega");
-    const entregaOutrosWrapper = document.getElementById("entrega-outros-wrapper");
-    const entregaOutrosInput = document.getElementById("entrega-outros");
+    const atendenteSelect = document.getElementById('atendente');
+    const atendenteOutrosWrapper = document.getElementById('atendente-outros-wrapper');
+    const atendenteOutrosInput = document.getElementById('atendente-outros');
 
-    const finalizadoPorSelect = document.getElementById("finalizado-por");
-    const finalizadoOutrosWrapper = document.getElementById("finalizado-outros-wrapper");
-    const finalizadoOutrosInput = document.getElementById("finalizado-outros");
+    const clienteInput = document.getElementById('cliente');
+    const telefoneInput = document.getElementById('telefone');
+    const telefoneDatalist = document.getElementById('telefones-cadastrados');
+    const clienteEncontradoEl = document.getElementById('cliente-encontrado');
+    let clientsCache = [];
 
-    const formaPagamentoSelect = document.getElementById("forma-pagamento");
-    const pagamentoOutrosWrapper = document.getElementById("pagamento-outros-wrapper");
-    const pagamentoOutrosInput = document.getElementById("pagamento-outros");
+    const entregaSelect = document.getElementById('tipo-entrega');
+    const entregaOutrosWrapper = document.getElementById('entrega-outros-wrapper');
+    const entregaOutrosInput = document.getElementById('entrega-outros');
 
-    const origemSelect = document.getElementById("origem-cliente");
-    const origemOutrosWrapper = document.getElementById("origem-outros-wrapper");
-    const origemOutrosInput = document.getElementById("origem-outros");
+    const formaPagamentoSelect = document.getElementById('forma-pagamento');
+    const pagamentoOutrosWrapper = document.getElementById('pagamento-outros-wrapper');
+    const pagamentoOutrosInput = document.getElementById('pagamento-outros');
 
-    const form = document.getElementById("form-venda");
-    const feedbackEl = document.getElementById("feedback");
-    const submitBtn = document.getElementById("btn-submit");
+    const origemSelect = document.getElementById('origem-cliente');
+    const origemOutrosWrapper = document.getElementById('origem-outros-wrapper');
+    const origemOutrosInput = document.getElementById('origem-outros');
 
-    let clientesCache = [];
-    let debounceTimer = null;
+    const pedidoFinalizadoSelect = document.getElementById('pedido-finalizado-por');
+    const pedidoFinalizadoOutrosWrapper = document.getElementById('pedido-finalizado-outros-wrapper');
+    const pedidoFinalizadoOutrosInput = document.getElementById('pedido-finalizado-outros');
 
-    function hojeISO() {
-      const agora = new Date();
-      const ano = agora.getFullYear();
-      const mes = String(agora.getMonth() + 1).padStart(2, "0");
-      const dia = String(agora.getDate()).padStart(2, "0");
-      return `${ano}-${mes}-${dia}`;
+    function toggleOtherField(selectEl, wrapperEl, inputEl) {
+      const isOther = selectEl.value === 'outros';
+      wrapperEl.style.display = isOther ? 'block' : 'none';
+      inputEl.required = isOther;
+      if (!isOther) inputEl.value = '';
     }
 
-    function horaAtual() {
-      const agora = new Date();
-      const hora = String(agora.getHours()).padStart(2, "0");
-      const min = String(agora.getMinutes()).padStart(2, "0");
-      return `${hora}:${min}`;
+    function normalizePhone(value) {
+      return String(value || '').replace(/\D/g, '');
     }
 
-    function normalizarTexto(texto) {
-      return String(texto || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim()
-        .toLowerCase();
-    }
-
-    function formatarTelefone(valor) {
-      let v = String(valor || "").replace(/\D/g, "").slice(0, 11);
-
-      if (v.length > 10) {
-        return v.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, "($1) $2-$3");
+    function formatPhoneDisplay(value) {
+      const digits = normalizePhone(value);
+      if (digits.length === 11) {
+        return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
       }
-      if (v.length > 6) {
-        return v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+      if (digits.length === 10) {
+        return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
       }
-      if (v.length > 2) {
-        return v.replace(/^(\d{2})(\d+)/, "($1) $2");
-      }
-      if (v.length > 0) {
-        return v.replace(/^(\d+)/, "($1");
-      }
-      return "";
+      return value || '';
     }
 
-    function formatarMoedaBR(valor) {
-      return "R$ " + Number(valor || 0).toFixed(2).replace(".", ",");
-    }
-
-    function numeroBRParaFloat(valor) {
-      if (valor === null || valor === undefined || valor === "") return 0;
-      const texto = String(valor).trim().replace(/\s/g, "").replace("R$", "").replace(/\./g, "").replace(",", ".");
-      const numero = parseFloat(texto);
-      return isNaN(numero) ? 0 : numero;
-    }
-
-    function toggleOutros(selectEl, wrapperEl, inputEl) {
-      if (selectEl.value === "outros") {
-        wrapperEl.style.display = "flex";
+    function parseMoney(value) {
+      if (value === null || value === undefined) return 0;
+      let v = String(value).trim();
+      if (!v) return 0;
+      v = v.replace(/[R$\s]/g, '');
+      if (v.includes(',') && v.includes('.')) {
+        v = v.replace(/\./g, '').replace(',', '.');
       } else {
-        wrapperEl.style.display = "none";
-        inputEl.value = "";
+        v = v.replace(',', '.');
+      }
+      const num = parseFloat(v);
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    function moneyBRL(value) {
+      return (Number(value || 0)).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+    }
+
+    function setDefaultDateTime() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mi = String(now.getMinutes()).padStart(2, '0');
+
+      if (!document.getElementById('data').value) {
+        document.getElementById('data').value = `${yyyy}-${mm}-${dd}`;
+      }
+      if (!document.getElementById('hora').value) {
+        document.getElementById('hora').value = `${hh}:${mi}`;
       }
     }
 
-    function hideSuggestions() {
-      clienteSugestoes.style.display = "none";
-      clienteSugestoes.innerHTML = "";
+    function refreshClientDatalist() {
+      telefoneDatalist.innerHTML = '';
+      clientsCache
+        .slice()
+        .sort((a, b) => (a.cliente || '').localeCompare(b.cliente || ''))
+        .forEach(client => {
+          if (!client.telefone) return;
+          const option = document.createElement('option');
+          option.value = formatPhoneDisplay(client.telefone);
+          option.label = client.cliente || '';
+          telefoneDatalist.appendChild(option);
+        });
     }
 
-    function showSuggestions(resultados) {
-      clienteSugestoes.innerHTML = "";
-
-      if (!resultados.length) {
-        hideSuggestions();
+    function syncClientFromPhone() {
+      const normalized = normalizePhone(telefoneInput.value);
+      if (!normalized) {
+        clienteEncontradoEl.textContent = 'Opcional';
+        clienteEncontradoEl.className = 'field-helper';
         return;
       }
 
-      resultados.forEach(cliente => {
-        const item = document.createElement("div");
-        item.className = "autocomplete-item";
-        item.innerHTML = `
-          <div>${cliente.nome}</div>
-          <small>${cliente.telefone || "Sem telefone cadastrado"}</small>
-        `;
+      const exact = clientsCache.find(client => client.telefoneNormalizado === normalized);
+      if (exact) {
+        clienteInput.value = exact.cliente || clienteInput.value;
+        clienteEncontradoEl.textContent = `Cliente encontrado: ${exact.cliente}`;
+        clienteEncontradoEl.className = 'field-helper field-helper--success';
+        return;
+      }
 
-        item.addEventListener("click", () => {
-          clienteInput.value = cliente.nome || "";
-          telefoneInput.value = cliente.telefone || "";
-          hideSuggestions();
-        });
+      const suggestions = clientsCache
+        .filter(client => client.telefoneNormalizado && client.telefoneNormalizado.includes(normalized))
+        .slice(0, 3)
+        .map(client => client.cliente)
+        .filter(Boolean);
 
-        clienteSugestoes.appendChild(item);
+      if (suggestions.length) {
+        clienteEncontradoEl.textContent = `Sugestões: ${suggestions.join(', ')}`;
+      } else {
+        clienteEncontradoEl.textContent = 'Cliente ainda não cadastrado.';
+      }
+      clienteEncontradoEl.className = 'field-helper';
+    }
+
+    function updateTotal() {
+      let total = 0;
+
+      Array.from(productsList.children).forEach(item => {
+        const qtdInput = item.querySelector("input[data-role='quantidade']");
+        const valInput = item.querySelector("input[data-role='valor']");
+        const qtd = Math.max(1, parseInt(qtdInput?.value || '1', 10) || 1);
+        const valor = parseMoney(valInput?.value || '');
+        total += qtd * valor;
       });
 
-      clienteSugestoes.style.display = "block";
+      totalInput.value = total > 0 ? moneyBRL(total) : "";
+      return total;
     }
 
-    async function carregarClientes() {
-      try {
-        const response = await fetch(`${WEB_APP_URL}?action=clientes`);
-        const data = await response.json();
+    function resolveProductLabel(categoryValue, categoryOther, subValue, subOther, colorValue, colorOther) {
+      const categoryText = categoryValue === 'outros'
+        ? (categoryOther || 'Outros')
+        : (CATEGORY_LABELS[categoryValue] || categoryValue || '');
 
-        if (data.success && Array.isArray(data.clientes)) {
-          clientesCache = data.clientes;
+      const categoryOptions = SUBCATEGORY_MAP[categoryValue] || [];
+      const subData = categoryOptions.find(item => item.value === subValue);
+      const subText = subValue === 'outros'
+        ? (subOther || 'Outros')
+        : (subData ? subData.label : (subValue || ''));
+
+      const colorText = colorValue === 'outros'
+        ? (colorOther || 'Outros')
+        : (COLOR_LABELS[colorValue] || colorValue || '');
+
+      return { categoryText, subText, colorText };
+    }
+
+    function buildSubcategoryOptions(categoryValue, selectEl) {
+      const categoryOptions = SUBCATEGORY_MAP[categoryValue] || [];
+      selectEl.innerHTML = '';
+
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = categoryOptions.length ? 'Selecione...' : 'Sem subcategoria';
+      selectEl.appendChild(defaultOption);
+
+      categoryOptions.forEach(optionData => {
+        const option = document.createElement('option');
+        option.value = optionData.value;
+        option.textContent = optionData.label;
+        selectEl.appendChild(option);
+      });
+
+      selectEl.disabled = !categoryOptions.length || categoryValue === 'outros';
+    }
+
+    function updateProductDynamicFields(wrapper) {
+      const categoriaSelect = wrapper.querySelector("[data-role='categoria']");
+      const subcategoriaSelect = wrapper.querySelector("[data-role='subcategoria']");
+      const catOutrosWrapper = wrapper.querySelector(".product-cat-outros");
+      const catOutrosInput = wrapper.querySelector("[data-role='categoria_outros']");
+      const subField = wrapper.querySelector(".product-subcat-field");
+      const subOutrosWrapper = wrapper.querySelector(".product-subcat-outros");
+      const subOutrosInput = wrapper.querySelector("[data-role='subcategoria_outros']");
+      const corSelect = wrapper.querySelector("[data-role='cor']");
+      const corOutrosWrapper = wrapper.querySelector(".product-cor-outros");
+      const corOutrosInput = wrapper.querySelector("[data-role='cor_outros']");
+
+      const categoria = categoriaSelect.value;
+      buildSubcategoryOptions(categoria, subcategoriaSelect);
+
+      if (categoria === 'outros') {
+        catOutrosWrapper.style.display = 'block';
+        catOutrosInput.required = true;
+        subField.style.display = 'none';
+        subcategoriaSelect.required = false;
+        subcategoriaSelect.value = '';
+        subOutrosWrapper.style.display = 'none';
+        subOutrosInput.required = false;
+        subOutrosInput.value = '';
+      } else {
+        catOutrosWrapper.style.display = 'none';
+        catOutrosInput.required = false;
+        catOutrosInput.value = '';
+
+        subField.style.display = 'block';
+        const hasSubcategories = (SUBCATEGORY_MAP[categoria] || []).length > 0;
+        subcategoriaSelect.required = hasSubcategories;
+        if (!hasSubcategories) {
+          subcategoriaSelect.value = '';
+          subOutrosWrapper.style.display = 'none';
+          subOutrosInput.required = false;
+          subOutrosInput.value = '';
+        } else if (subcategoriaSelect.value === 'outros') {
+          subOutrosWrapper.style.display = 'block';
+          subOutrosInput.required = true;
+        } else {
+          subOutrosWrapper.style.display = 'none';
+          subOutrosInput.required = false;
+          subOutrosInput.value = '';
         }
-      } catch (error) {
-        console.error("Erro ao carregar clientes:", error);
       }
-    }
 
-    function buscarClientesLocais(termo) {
-      const texto = normalizarTexto(termo);
-      if (!texto) return [];
-
-      return clientesCache
-        .filter(cliente => normalizarTexto(cliente.nome).includes(texto))
-        .slice(0, 8);
-    }
-
-    function preencherTelefoneSeClienteExistir() {
-      const nomeDigitado = normalizarTexto(clienteInput.value);
-      if (!nomeDigitado) return;
-
-      const clienteEncontrado = clientesCache.find(c => normalizarTexto(c.nome) === nomeDigitado);
-      if (clienteEncontrado && clienteEncontrado.telefone) {
-        telefoneInput.value = clienteEncontrado.telefone;
+      if (corSelect.value === 'outros') {
+        corOutrosWrapper.style.display = 'block';
+        corOutrosInput.required = true;
+      } else {
+        corOutrosWrapper.style.display = 'none';
+        corOutrosInput.required = false;
+        corOutrosInput.value = '';
       }
     }
 
     function createProductItem() {
       const index = productsList.children.length;
-      const wrapper = document.createElement("div");
-      wrapper.className = "product-item";
+      const wrapper = document.createElement('div');
+      wrapper.className = 'product-item';
 
       wrapper.innerHTML = `
-        <div class="field">
+        <div class="field product-col-categoria">
           <span class="pill-label">Categoria<span class="required">*</span></span>
           <select data-role="categoria" name="produtos[${index}][categoria]" required>
             <option value="">Selecione...</option>
             <option value="lingeries">Lingeries</option>
-            <option value="sexy-shop">Sexy Shop</option>
+            <option value="sexy-shop">Sexy shop</option>
             <option value="acessorios">Acessórios</option>
             <option value="calcinhas">Calcinhas</option>
-            <option value="moda-praia">Moda Praia</option>
+            <option value="moda-praia">Moda praia</option>
             <option value="outros">Outros</option>
           </select>
         </div>
 
-        <div class="field field-categoria-outros" style="display:none;">
-          <span class="pill-label">Categoria (Outros)</span>
-          <input type="text"
-                 data-role="categoria_outros"
-                 name="produtos[${index}][categoria_outros]"
-                 placeholder="Digite a categoria">
-        </div>
-
-        <div class="field field-subcategoria" style="display:none;">
-          <span class="pill-label">Subcategoria<span class="required">*</span></span>
+        <div class="field product-subcat-field product-col-subcategoria">
+          <span class="pill-label">Subcategoria</span>
           <select data-role="subcategoria" name="produtos[${index}][subcategoria]">
             <option value="">Selecione...</option>
           </select>
         </div>
 
-        <div class="field field-subcategoria-outros" style="display:none;">
-          <span class="pill-label">Subcategoria (Outros)</span>
-          <input type="text"
-                 data-role="subcategoria_outros"
-                 name="produtos[${index}][subcategoria_outros]"
-                 placeholder="Digite a subcategoria">
-        </div>
-
-        <div class="field">
+        <div class="field product-col-nome">
           <span class="pill-label">Nome do produto<span class="required">*</span></span>
           <input type="text"
                  data-role="nome"
                  name="produtos[${index}][nome]"
-                 placeholder="Ex.: Conjunto renda vinho, calcinha fio dental, óleo corporal..."
+                 placeholder="Ex.: Conjunto renda vinho, calcinha fio dental, óleo corporal…"
                  required>
         </div>
 
-        <div class="field">
+        <div class="field product-col-quantidade">
           <span class="pill-label">Quantidade<span class="required">*</span></span>
           <input type="number"
                  min="1"
@@ -945,7 +1056,21 @@
                  required>
         </div>
 
-        <div class="field">
+        <div class="field product-col-cor">
+          <span class="pill-label">Cor<span class="required">*</span></span>
+          <select data-role="cor" name="produtos[${index}][cor]" required>
+            <option value="">Selecione...</option>
+            <option value="preto">Preto</option>
+            <option value="vermelho">Vermelho</option>
+            <option value="branco">Branco</option>
+            <option value="rosa">Rosa</option>
+            <option value="roxo">Roxo</option>
+            <option value="verde">Verde</option>
+            <option value="outros">Outros</option>
+          </select>
+        </div>
+
+        <div class="field product-col-valor">
           <span class="pill-label">Valor (R$)<span class="required">*</span></span>
           <input type="number"
                  step="0.01"
@@ -957,150 +1082,102 @@
                  required>
         </div>
 
-        <div class="btn-row">
+        <div class="btn-row product-col-remove">
           <button type="button" class="btn-icon btn-icon--ghost btn-remove-product">
             remover
           </button>
         </div>
+
+        <div class="field field--full product-cat-outros" style="display:none; margin-top:6px;">
+          <span class="pill-label">Informe a categoria (Outros)</span>
+          <input type="text"
+                 data-role="categoria_outros"
+                 name="produtos[${index}][categoria_outros]"
+                 placeholder="Digite a categoria do produto">
+        </div>
+
+        <div class="field field--full product-subcat-outros" style="display:none; margin-top:6px;">
+          <span class="pill-label">Informe a subcategoria (Outros)</span>
+          <input type="text"
+                 data-role="subcategoria_outros"
+                 name="produtos[${index}][subcategoria_outros]"
+                 placeholder="Digite a subcategoria do produto">
+        </div>
+
+        <div class="field field--full product-cor-outros" style="display:none; margin-top:6px;">
+          <span class="pill-label">Informe a cor (Outros)</span>
+          <input type="text"
+                 data-role="cor_outros"
+                 name="produtos[${index}][cor_outros]"
+                 placeholder="Digite a cor do produto">
+        </div>
       `;
 
-      const categoriaSelect = wrapper.querySelector("[data-role='categoria']");
-      const categoriaOutrosWrapper = wrapper.querySelector(".field-categoria-outros");
-      const categoriaOutrosInput = wrapper.querySelector("[data-role='categoria_outros']");
-      const subcategoriaWrapper = wrapper.querySelector(".field-subcategoria");
-      const subcategoriaSelect = wrapper.querySelector("[data-role='subcategoria']");
-      const subcategoriaOutrosWrapper = wrapper.querySelector(".field-subcategoria-outros");
-      const subcategoriaOutrosInput = wrapper.querySelector("[data-role='subcategoria_outros']");
-      const valorInput = wrapper.querySelector("[data-role='valor']");
-      const quantidadeInput = wrapper.querySelector("[data-role='quantidade']");
-      const removeBtn = wrapper.querySelector(".btn-remove-product");
-
-      function resetSubcategoria() {
-        subcategoriaSelect.innerHTML = `<option value="">Selecione...</option>`;
-        subcategoriaSelect.required = false;
-        subcategoriaSelect.value = "";
-        subcategoriaOutrosInput.value = "";
-        subcategoriaWrapper.style.display = "none";
-        subcategoriaOutrosWrapper.style.display = "none";
-      }
-
-      function popularSubcategoria(categoria) {
-        resetSubcategoria();
-
-        if (categoria === "outros") return;
-        if (categoria === "calcinhas") return;
-
-        const opcoes = SUBCATEGORIAS[categoria] || [];
-        if (!opcoes.length) return;
-
-        subcategoriaWrapper.style.display = "flex";
-        subcategoriaSelect.required = true;
-
-        opcoes.forEach(opcao => {
-          const option = document.createElement("option");
-          option.value = opcao.value;
-          option.textContent = opcao.label;
-          subcategoriaSelect.appendChild(option);
-        });
-      }
-
-      categoriaSelect.addEventListener("change", () => {
-        if (categoriaSelect.value === "outros") {
-          categoriaOutrosWrapper.style.display = "flex";
-        } else {
-          categoriaOutrosWrapper.style.display = "none";
-          categoriaOutrosInput.value = "";
-        }
-
-        popularSubcategoria(categoriaSelect.value);
-      });
-
-      subcategoriaSelect.addEventListener("change", () => {
-        if (subcategoriaSelect.value === "outros") {
-          subcategoriaOutrosWrapper.style.display = "flex";
-        } else {
-          subcategoriaOutrosWrapper.style.display = "none";
-          subcategoriaOutrosInput.value = "";
-        }
-      });
-
-      valorInput.addEventListener("input", updateTotal);
-      quantidadeInput.addEventListener("input", updateTotal);
-
-      removeBtn.addEventListener("click", () => {
+      wrapper.querySelector('.btn-remove-product').addEventListener('click', () => {
         productsList.removeChild(wrapper);
         renumberProducts();
         updateTotal();
       });
 
+      wrapper.querySelector("[data-role='valor']").addEventListener('input', updateTotal);
+      wrapper.querySelector("[data-role='quantidade']").addEventListener('input', updateTotal);
+
+      wrapper.querySelector("[data-role='categoria']").addEventListener('change', () => {
+        wrapper.querySelector("[data-role='subcategoria']").value = '';
+        updateProductDynamicFields(wrapper);
+      });
+
+      wrapper.querySelector("[data-role='subcategoria']").addEventListener('change', () => {
+        updateProductDynamicFields(wrapper);
+      });
+
+      wrapper.querySelector("[data-role='cor']").addEventListener('change', () => {
+        updateProductDynamicFields(wrapper);
+      });
+
+      updateProductDynamicFields(wrapper);
       return wrapper;
     }
 
     function renumberProducts() {
       Array.from(productsList.children).forEach((item, newIndex) => {
-        const campos = {
-          categoria: item.querySelector("[data-role='categoria']"),
-          categoria_outros: item.querySelector("[data-role='categoria_outros']"),
-          subcategoria: item.querySelector("[data-role='subcategoria']"),
-          subcategoria_outros: item.querySelector("[data-role='subcategoria_outros']"),
-          nome: item.querySelector("[data-role='nome']"),
-          quantidade: item.querySelector("[data-role='quantidade']"),
-          valor: item.querySelector("[data-role='valor']")
-        };
+        const roles = [
+          'categoria', 'subcategoria', 'nome', 'quantidade', 'cor', 'valor',
+          'categoria_outros', 'subcategoria_outros', 'cor_outros'
+        ];
 
-        if (campos.categoria) campos.categoria.name = `produtos[${newIndex}][categoria]`;
-        if (campos.categoria_outros) campos.categoria_outros.name = `produtos[${newIndex}][categoria_outros]`;
-        if (campos.subcategoria) campos.subcategoria.name = `produtos[${newIndex}][subcategoria]`;
-        if (campos.subcategoria_outros) campos.subcategoria_outros.name = `produtos[${newIndex}][subcategoria_outros]`;
-        if (campos.nome) campos.nome.name = `produtos[${newIndex}][nome]`;
-        if (campos.quantidade) campos.quantidade.name = `produtos[${newIndex}][quantidade]`;
-        if (campos.valor) campos.valor.name = `produtos[${newIndex}][valor]`;
+        roles.forEach(role => {
+          const el = item.querySelector(`[data-role='${role}']`);
+          if (!el) return;
+          el.name = `produtos[${newIndex}][${role}]`;
+        });
       });
     }
 
-    function updateTotal() {
-      let total = 0;
-
-      Array.from(productsList.children).forEach(item => {
-        const valorInput = item.querySelector("[data-role='valor']");
-        const quantidadeInput = item.querySelector("[data-role='quantidade']");
-
-        const valor = numeroBRParaFloat(valorInput ? valorInput.value : 0);
-        const quantidade = Math.max(parseInt(quantidadeInput ? quantidadeInput.value : 1, 10) || 1, 1);
-
-        total += valor * quantidade;
-      });
-
-      totalInput.value = total > 0 ? formatarMoedaBR(total) : "";
-    }
-
-    function resetCamposCondicionais() {
-      atendenteOutrosWrapper.style.display = "none";
-      entregaOutrosWrapper.style.display = "none";
-      finalizadoOutrosWrapper.style.display = "none";
-      pagamentoOutrosWrapper.style.display = "none";
-      origemOutrosWrapper.style.display = "none";
-
-      atendenteOutrosInput.value = "";
-      entregaOutrosInput.value = "";
-      finalizadoOutrosInput.value = "";
-      pagamentoOutrosInput.value = "";
-      origemOutrosInput.value = "";
-    }
-
-    function obterProdutosPayload() {
+    function collectProducts() {
       const produtos = [];
-
       Array.from(productsList.children).forEach(item => {
-        const categoria = item.querySelector("[data-role='categoria']")?.value || "";
-        const categoriaOutros = item.querySelector("[data-role='categoria_outros']")?.value.trim() || "";
-        const subcategoria = item.querySelector("[data-role='subcategoria']")?.value || "";
-        const subcategoriaOutros = item.querySelector("[data-role='subcategoria_outros']")?.value.trim() || "";
-        const nome = item.querySelector("[data-role='nome']")?.value.trim() || "";
-        const quantidade = item.querySelector("[data-role='quantidade']")?.value || "1";
-        const valor = item.querySelector("[data-role='valor']")?.value || "";
+        const categoriaEl = item.querySelector("[data-role='categoria']");
+        const subcategoriaEl = item.querySelector("[data-role='subcategoria']");
+        const nomeEl = item.querySelector("[data-role='nome']");
+        const quantidadeEl = item.querySelector("[data-role='quantidade']");
+        const corEl = item.querySelector("[data-role='cor']");
+        const valorEl = item.querySelector("[data-role='valor']");
+        const categoriaOutrosEl = item.querySelector("[data-role='categoria_outros']");
+        const subcategoriaOutrosEl = item.querySelector("[data-role='subcategoria_outros']");
+        const corOutrosEl = item.querySelector("[data-role='cor_outros']");
 
-        if (categoria || categoriaOutros || subcategoria || subcategoriaOutros || nome || quantidade || valor) {
+        const categoria = categoriaEl ? categoriaEl.value : "";
+        const subcategoria = subcategoriaEl ? subcategoriaEl.value : "";
+        const nome = nomeEl ? nomeEl.value.trim() : "";
+        const quantidade = Math.max(1, parseInt(quantidadeEl?.value || '1', 10) || 1);
+        const cor = corEl ? corEl.value : "";
+        const valor = parseMoney(valorEl ? valorEl.value : "");
+        const categoriaOutros = categoriaOutrosEl ? categoriaOutrosEl.value.trim() : "";
+        const subcategoriaOutros = subcategoriaOutrosEl ? subcategoriaOutrosEl.value.trim() : "";
+        const corOutros = corOutrosEl ? corOutrosEl.value.trim() : "";
+
+        if (categoria || nome || valor || categoriaOutros || subcategoria || cor || corOutros) {
           produtos.push({
             categoria,
             categoriaOutros,
@@ -1108,214 +1185,165 @@
             subcategoriaOutros,
             nome,
             quantidade,
-            valor
+            cor,
+            corOutros,
+            valor,
+            subtotal: quantidade * valor
           });
         }
       });
-
       return produtos;
     }
 
-    function validarAntesDeEnviar(payload) {
-      if (!payload.atendente) {
-        throw new Error("Selecione o atendente.");
-      }
+    function buildPayload() {
+      const produtos = collectProducts();
+      const totalNumerico = updateTotal();
+      const atendente = atendenteSelect.value === 'outros'
+        ? (atendenteOutrosInput.value.trim() || 'Outros')
+        : atendenteSelect.value;
 
-      if (payload.atendente === "outros" && !payload.atendenteOutros.trim()) {
-        throw new Error("Informe o nome do atendente em Outros.");
-      }
-
-      if (!payload.cliente.trim()) {
-        throw new Error("Informe o nome do cliente.");
-      }
-
-      if (!payload.data) {
-        throw new Error("Informe a data da venda.");
-      }
-
-      if (!payload.tipoEntrega) {
-        throw new Error("Selecione o tipo de entrega.");
-      }
-
-      if (payload.tipoEntrega === "outros" && !payload.tipoEntregaOutros.trim()) {
-        throw new Error("Informe o tipo de entrega em Outros.");
-      }
-
-      if (!payload.finalizadoPor) {
-        throw new Error("Selecione por onde o pedido foi finalizado.");
-      }
-
-      if (payload.finalizadoPor === "outros" && !payload.finalizadoPorOutros.trim()) {
-        throw new Error("Informe por onde o pedido foi finalizado em Outros.");
-      }
-
-      if (!payload.formaPagamento) {
-        throw new Error("Selecione a forma de pagamento.");
-      }
-
-      if (payload.formaPagamento === "outros" && !payload.formaPagamentoOutros.trim()) {
-        throw new Error("Informe a forma de pagamento em Outros.");
-      }
-
-      if (!payload.origemCliente) {
-        throw new Error("Selecione a origem do cliente.");
-      }
-
-      if (payload.origemCliente === "outros" && !payload.origemOutros.trim()) {
-        throw new Error("Informe a origem do cliente em Outros.");
-      }
-
-      if (!payload.produtos.length) {
-        throw new Error("Adicione pelo menos um produto.");
-      }
+      return {
+        atendente,
+        atendenteBase: atendenteSelect.value,
+        atendenteOutros: atendenteOutrosInput.value.trim(),
+        cliente: clienteInput.value.trim(),
+        telefone: telefoneInput.value.trim(),
+        telefoneNormalizado: normalizePhone(telefoneInput.value),
+        data: document.getElementById('data').value,
+        hora: document.getElementById('hora').value,
+        tipoEntrega: entregaSelect.value,
+        tipoEntregaOutros: entregaOutrosInput.value.trim(),
+        observacoes: document.getElementById('observacoes').value.trim(),
+        formaPagamento: formaPagamentoSelect.value,
+        formaPagamentoOutros: pagamentoOutrosInput.value.trim(),
+        origemCliente: origemSelect.value,
+        origemOutros: origemOutrosInput.value.trim(),
+        pedidoFinalizadoPor: pedidoFinalizadoSelect.value,
+        pedidoFinalizadoPorOutros: pedidoFinalizadoOutrosInput.value.trim(),
+        produtos,
+        total: totalInput.value || moneyBRL(totalNumerico),
+        totalNumerico,
+        quantidadeItens: produtos.reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0),
+        quantidadeLinhasProdutos: produtos.length
+      };
     }
 
-    atendenteSelect.addEventListener("change", () => {
-      toggleOutros(atendenteSelect, atendenteOutrosWrapper, atendenteOutrosInput);
+    function pushClientToCache(payload) {
+      const phoneKey = payload.telefoneNormalizado;
+      if (!phoneKey || !payload.cliente) return;
+
+      const existing = clientsCache.find(client => client.telefoneNormalizado === phoneKey);
+      if (existing) {
+        existing.cliente = payload.cliente;
+        existing.telefone = payload.telefone;
+      } else {
+        clientsCache.push({
+          cliente: payload.cliente,
+          telefone: payload.telefone,
+          telefoneNormalizado: phoneKey
+        });
+      }
+      refreshClientDatalist();
+    }
+
+    function loadClientRegistry() {
+      if (!WEB_APP_URL || WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbzxRa6GJ-h3sgWw_FMu6a6Rqnl5yz8BqVMf1QQIZVZPBvPyKCzL0he0TwUKuUeDt058ZA/exec') return;
+      const script = document.createElement('script');
+      script.src = `${WEB_APP_URL}?action=getClients&callback=handleClients&ts=${Date.now()}`;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    window.handleClients = function(response) {
+      if (!response || !response.clients) return;
+      clientsCache = response.clients.map(client => ({
+        cliente: client.cliente || '',
+        telefone: client.telefone || '',
+        telefoneNormalizado: normalizePhone(client.telefone || client.telefoneNormalizado || '')
+      }));
+      refreshClientDatalist();
+    };
+
+    addProductBtn.addEventListener('click', () => {
+      productsList.appendChild(createProductItem());
     });
 
-    entregaSelect.addEventListener("change", () => {
-      toggleOutros(entregaSelect, entregaOutrosWrapper, entregaOutrosInput);
-    });
+    atendenteSelect.addEventListener('change', () => toggleOtherField(atendenteSelect, atendenteOutrosWrapper, atendenteOutrosInput));
+    entregaSelect.addEventListener('change', () => toggleOtherField(entregaSelect, entregaOutrosWrapper, entregaOutrosInput));
+    formaPagamentoSelect.addEventListener('change', () => toggleOtherField(formaPagamentoSelect, pagamentoOutrosWrapper, pagamentoOutrosInput));
+    origemSelect.addEventListener('change', () => toggleOtherField(origemSelect, origemOutrosWrapper, origemOutrosInput));
+    pedidoFinalizadoSelect.addEventListener('change', () => toggleOtherField(pedidoFinalizadoSelect, pedidoFinalizadoOutrosWrapper, pedidoFinalizadoOutrosInput));
 
-    finalizadoPorSelect.addEventListener("change", () => {
-      toggleOutros(finalizadoPorSelect, finalizadoOutrosWrapper, finalizadoOutrosInput);
-    });
-
-    formaPagamentoSelect.addEventListener("change", () => {
-      toggleOutros(formaPagamentoSelect, pagamentoOutrosWrapper, pagamentoOutrosInput);
-    });
-
-    origemSelect.addEventListener("change", () => {
-      toggleOutros(origemSelect, origemOutrosWrapper, origemOutrosInput);
-    });
-
-    telefoneInput.addEventListener("input", (e) => {
-      e.target.value = formatarTelefone(e.target.value);
-    });
-
-    clienteInput.addEventListener("input", () => {
-      clearTimeout(debounceTimer);
-
-      debounceTimer = setTimeout(() => {
-        const termo = clienteInput.value.trim();
-
-        if (!termo) {
-          hideSuggestions();
-          return;
-        }
-
-        const resultados = buscarClientesLocais(termo);
-        showSuggestions(resultados);
-      }, 120);
-    });
-
-    clienteInput.addEventListener("blur", () => {
-      setTimeout(() => {
-        preencherTelefoneSeClienteExistir();
-        hideSuggestions();
-      }, 180);
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!clienteSugestoes.contains(e.target) && e.target !== clienteInput) {
-        hideSuggestions();
+    telefoneInput.addEventListener('input', syncClientFromPhone);
+    telefoneInput.addEventListener('change', syncClientFromPhone);
+    telefoneInput.addEventListener('blur', () => {
+      if (telefoneInput.value.trim()) {
+        telefoneInput.value = formatPhoneDisplay(telefoneInput.value.trim());
+        syncClientFromPhone();
       }
     });
 
-    addProductBtn.addEventListener("click", () => {
-      const item = createProductItem();
-      productsList.appendChild(item);
-    });
-
-    form.addEventListener("reset", () => {
+    form.addEventListener('reset', () => {
       setTimeout(() => {
-        productsList.innerHTML = "";
+        productsList.innerHTML = '';
         productsList.appendChild(createProductItem());
-        resetCamposCondicionais();
-        hideSuggestions();
-        totalInput.value = "";
-        feedbackEl.textContent = "";
-        feedbackEl.className = "feedback";
-        document.getElementById("data").value = hojeISO();
-        document.getElementById("hora").value = horaAtual();
+        updateTotal();
+        setDefaultDateTime();
+        [
+          [atendenteSelect, atendenteOutrosWrapper, atendenteOutrosInput],
+          [entregaSelect, entregaOutrosWrapper, entregaOutrosInput],
+          [formaPagamentoSelect, pagamentoOutrosWrapper, pagamentoOutrosInput],
+          [origemSelect, origemOutrosWrapper, origemOutrosInput],
+          [pedidoFinalizadoSelect, pedidoFinalizadoOutrosWrapper, pedidoFinalizadoOutrosInput]
+        ].forEach(([selectEl, wrapperEl, inputEl]) => toggleOtherField(selectEl, wrapperEl, inputEl));
+
+        clienteEncontradoEl.textContent = 'Opcional';
+        clienteEncontradoEl.className = 'field-helper';
+        feedbackEl.textContent = '';
+        feedbackEl.className = 'feedback';
       }, 0);
     });
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       feedbackEl.textContent = "";
       feedbackEl.className = "feedback";
 
-      const payload = {
-        atendente: atendenteSelect.value,
-        atendenteOutros: atendenteOutrosInput.value.trim(),
-        cliente: clienteInput.value.trim(),
-        telefone: telefoneInput.value.trim(),
-        data: document.getElementById("data").value,
-        hora: document.getElementById("hora").value,
-        tipoEntrega: entregaSelect.value,
-        tipoEntregaOutros: entregaOutrosInput.value.trim(),
-        observacoes: document.getElementById("observacoes").value.trim(),
-        formaPagamento: formaPagamentoSelect.value,
-        formaPagamentoOutros: pagamentoOutrosInput.value.trim(),
-        origemCliente: origemSelect.value,
-        origemOutros: origemOutrosInput.value.trim(),
-        finalizadoPor: finalizadoPorSelect.value,
-        finalizadoPorOutros: finalizadoOutrosInput.value.trim(),
-        produtos: obterProdutosPayload()
-      };
+      if (!WEB_APP_URL || WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbzxRa6GJ-h3sgWw_FMu6a6Rqnl5yz8BqVMf1QQIZVZPBvPyKCzL0he0TwUKuUeDt058ZA/exec') {
+        feedbackEl.textContent = "Configure o WEB_APP_URL antes de publicar.";
+        feedbackEl.classList.add("error");
+        return;
+      }
+
+      const payload = buildPayload();
 
       try {
-        validarAntesDeEnviar(payload);
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = "enviando...";
         feedbackEl.textContent = "Enviando registro para a planilha...";
-
-        const response = await fetch(WEB_APP_URL, {
+        await fetch(WEB_APP_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
+          mode: "no-cors",
           body: JSON.stringify(payload)
         });
 
-        const resultado = await response.json();
-
-        if (!resultado.success) {
-          throw new Error(resultado.error || "Ocorreu um erro ao registrar a venda.");
-        }
+        pushClientToCache(payload);
 
         feedbackEl.textContent = "Venda registrada com sucesso!";
         feedbackEl.classList.add("success");
-
         form.reset();
-        await carregarClientes();
       } catch (error) {
         console.error(error);
-        feedbackEl.textContent = error.message || "Ocorreu um erro ao enviar para a planilha.";
+        feedbackEl.textContent = "Ocorreu um erro ao enviar para a planilha.";
         feedbackEl.classList.add("error");
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "registrar venda";
       }
     });
 
-    async function init() {
-      document.getElementById("data").value = hojeISO();
-      document.getElementById("hora").value = horaAtual();
-
-      if (productsList.children.length === 0) {
-        productsList.appendChild(createProductItem());
-      }
-
-      await carregarClientes();
-      updateTotal();
+    if (productsList.children.length === 0) {
+      productsList.appendChild(createProductItem());
     }
 
-    init();
+    setDefaultDateTime();
+    loadClientRegistry();
   </script>
 </body>
 </html>
