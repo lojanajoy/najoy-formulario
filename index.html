@@ -251,12 +251,13 @@
     .product-item {
       display: grid;
       grid-template-columns:
-        minmax(140px, 1.35fr)
-        minmax(140px, 1.35fr)
+        minmax(140px, 1.2fr)
+        minmax(140px, 1.2fr)
         minmax(190px, 1.8fr)
-        minmax(100px, 0.75fr)
-        minmax(170px, 1.25fr)
         minmax(120px, 0.9fr)
+        minmax(95px, 0.7fr)
+        minmax(170px, 1.15fr)
+        minmax(120px, 0.85fr)
         auto;
       gap: 10px 12px;
       align-items: end;
@@ -271,6 +272,7 @@
     .product-col-categoria,
     .product-col-subcategoria,
     .product-col-nome,
+    .product-col-tamanho,
     .product-col-quantidade,
     .product-col-cor,
     .product-col-valor,
@@ -285,12 +287,10 @@
       justify-content: flex-end;
     }
 
-
     .product-item:first-of-type {
       margin-top: 4px;
     }
 
-    
     .pill-label {
       display: block;
       width: 100%;
@@ -451,6 +451,7 @@
       .product-col-categoria,
       .product-col-subcategoria,
       .product-col-nome,
+      .product-col-tamanho,
       .product-col-cor { grid-column: auto; }
 
       .product-col-quantidade,
@@ -471,6 +472,7 @@
       .product-col-categoria,
       .product-col-subcategoria,
       .product-col-nome,
+      .product-col-tamanho,
       .product-col-quantidade,
       .product-col-cor,
       .product-col-valor,
@@ -584,7 +586,7 @@
           </div>
 
           <div class="field">
-           <label for="hora">Hora</label>
+            <label for="hora">Hora</label>
             <input type="time" id="hora" name="hora">
           </div>
         </div>
@@ -598,10 +600,24 @@
 
         <div id="products-list"></div>
 
-        <div class="field" style="margin-top:10px; max-width:230px; margin-left:auto;">
-          <label for="valor-total">Valor total da venda</label>
-          <input type="text" id="valor-total" name="valor_total" readonly placeholder="R$ 0,00">
-          <span class="field-helper">Calculado automaticamente pelos produtos.</span>
+        <div class="grid-3" style="margin-top:10px; max-width:780px; margin-left:auto;">
+          <div class="field">
+            <label for="valor-total">Valor total da venda</label>
+            <input type="text" id="valor-total" name="valor_total" readonly placeholder="R$ 0,00">
+            <span class="field-helper">Calculado automaticamente pelos produtos.</span>
+          </div>
+
+          <div class="field">
+            <label for="desconto">Desconto</label>
+            <input type="number" id="desconto" name="desconto" min="0" step="0.01" placeholder="0,00">
+            <span class="field-helper">Opcional.</span>
+          </div>
+
+          <div class="field" id="valor-final-wrapper" style="display:none;">
+            <label for="valor-final">Valor final da venda</label>
+            <input type="text" id="valor-final" name="valor_final" readonly placeholder="R$ 0,00">
+            <span class="field-helper">Valor total menos desconto.</span>
+          </div>
         </div>
 
         <div class="products-actions">
@@ -767,9 +783,21 @@
       "outros": "Outros"
     };
 
+    const SIZE_LABELS = {
+      "p": "P",
+      "m": "M",
+      "g": "G",
+      "gg": "GG",
+      "u": "U",
+      "outros": "Outros"
+    };
+
     const productsList = document.getElementById('products-list');
     const addProductBtn = document.getElementById('btn-add-product');
     const totalInput = document.getElementById('valor-total');
+    const descontoInput = document.getElementById('desconto');
+    const valorFinalInput = document.getElementById('valor-final');
+    const valorFinalWrapper = document.getElementById('valor-final-wrapper');
     const form = document.getElementById('form-venda');
     const feedbackEl = document.getElementById('feedback');
 
@@ -952,11 +980,23 @@
         total += qtd * valor;
       });
 
+      const desconto = Math.max(0, parseMoney(descontoInput?.value || '0'));
+      const valorFinal = Math.max(total - desconto, 0);
+
       totalInput.value = total > 0 ? moneyBRL(total) : "";
-      return total;
+      valorFinalInput.value = moneyBRL(valorFinal);
+
+      const mostrarValorFinal = desconto > 0;
+      valorFinalWrapper.style.display = mostrarValorFinal ? 'flex' : 'none';
+
+      return {
+        total,
+        desconto,
+        valorFinal
+      };
     }
 
-    function resolveProductLabel(categoryValue, categoryOther, subValue, subOther, colorValue, colorOther) {
+    function resolveProductLabel(categoryValue, categoryOther, subValue, subOther, sizeValue, sizeOther, colorValue, colorOther) {
       const categoryText = categoryValue === 'outros'
         ? (categoryOther || 'Outros')
         : (CATEGORY_LABELS[categoryValue] || categoryValue || '');
@@ -967,11 +1007,15 @@
         ? (subOther || 'Outros')
         : (subData ? subData.label : (subValue || ''));
 
+      const sizeText = sizeValue === 'outros'
+        ? (sizeOther || 'Outros')
+        : (SIZE_LABELS[sizeValue] || sizeValue || '');
+
       const colorText = colorValue === 'outros'
         ? (colorOther || 'Outros')
         : (COLOR_LABELS[colorValue] || colorValue || '');
 
-      return { categoryText, subText, colorText };
+      return { categoryText, subText, sizeText, colorText };
     }
 
     function buildSubcategoryOptions(categoryValue, selectEl, selectedValue = '') {
@@ -1005,6 +1049,9 @@
       const subField = wrapper.querySelector(".product-subcat-field");
       const subOutrosWrapper = wrapper.querySelector(".product-subcat-outros");
       const subOutrosInput = wrapper.querySelector("[data-role='subcategoria_outros']");
+      const tamanhoSelect = wrapper.querySelector("[data-role='tamanho']");
+      const tamanhoOutrosWrapper = wrapper.querySelector(".product-size-outros");
+      const tamanhoOutrosInput = wrapper.querySelector("[data-role='tamanho_outros']");
       const corSelect = wrapper.querySelector("[data-role='cor']");
       const corOutrosWrapper = wrapper.querySelector(".product-cor-outros");
       const corOutrosInput = wrapper.querySelector("[data-role='cor_outros']");
@@ -1045,6 +1092,15 @@
           subOutrosInput.required = false;
           subOutrosInput.value = '';
         }
+      }
+
+      if (tamanhoSelect.value === 'outros') {
+        tamanhoOutrosWrapper.style.display = 'block';
+        tamanhoOutrosInput.required = true;
+      } else {
+        tamanhoOutrosWrapper.style.display = 'none';
+        tamanhoOutrosInput.required = false;
+        tamanhoOutrosInput.value = '';
       }
 
       if (corSelect.value === 'outros') {
@@ -1090,6 +1146,19 @@
                  name="produtos[${index}][nome]"
                  placeholder="Ex.: Conjunto renda vinho, calcinha fio dental, óleo corporal…"
                  required>
+        </div>
+
+        <div class="field product-col-tamanho">
+          <span class="pill-label">Tamanho<span class="required">*</span></span>
+          <select data-role="tamanho" name="produtos[${index}][tamanho]" required>
+            <option value="">Selecione...</option>
+            <option value="p">P</option>
+            <option value="m">M</option>
+            <option value="g">G</option>
+            <option value="gg">GG</option>
+            <option value="u">U</option>
+            <option value="outros">Outros</option>
+          </select>
         </div>
 
         <div class="field product-col-quantidade">
@@ -1152,6 +1221,14 @@
                  placeholder="Digite a subcategoria do produto">
         </div>
 
+        <div class="field field--full product-size-outros" style="display:none; margin-top:6px;">
+          <span class="pill-label">Informe o tamanho (Outros)</span>
+          <input type="text"
+                 data-role="tamanho_outros"
+                 name="produtos[${index}][tamanho_outros]"
+                 placeholder="Digite o tamanho do produto">
+        </div>
+
         <div class="field field--full product-cor-outros" style="display:none; margin-top:6px;">
           <span class="pill-label">Informe a cor (Outros)</span>
           <input type="text"
@@ -1178,6 +1255,10 @@
         updateProductDynamicFields(wrapper, { rebuildSubcategory: false });
       });
 
+      wrapper.querySelector("[data-role='tamanho']").addEventListener('change', () => {
+        updateProductDynamicFields(wrapper, { rebuildSubcategory: false });
+      });
+
       wrapper.querySelector("[data-role='cor']").addEventListener('change', () => {
         updateProductDynamicFields(wrapper, { rebuildSubcategory: false });
       });
@@ -1189,8 +1270,8 @@
     function renumberProducts() {
       Array.from(productsList.children).forEach((item, newIndex) => {
         const roles = [
-          'categoria', 'subcategoria', 'nome', 'quantidade', 'cor', 'valor',
-          'categoria_outros', 'subcategoria_outros', 'cor_outros'
+          'categoria', 'subcategoria', 'nome', 'tamanho', 'quantidade', 'cor', 'valor',
+          'categoria_outros', 'subcategoria_outros', 'tamanho_outros', 'cor_outros'
         ];
 
         roles.forEach(role => {
@@ -1207,30 +1288,36 @@
         const categoriaEl = item.querySelector("[data-role='categoria']");
         const subcategoriaEl = item.querySelector("[data-role='subcategoria']");
         const nomeEl = item.querySelector("[data-role='nome']");
+        const tamanhoEl = item.querySelector("[data-role='tamanho']");
         const quantidadeEl = item.querySelector("[data-role='quantidade']");
         const corEl = item.querySelector("[data-role='cor']");
         const valorEl = item.querySelector("[data-role='valor']");
         const categoriaOutrosEl = item.querySelector("[data-role='categoria_outros']");
         const subcategoriaOutrosEl = item.querySelector("[data-role='subcategoria_outros']");
+        const tamanhoOutrosEl = item.querySelector("[data-role='tamanho_outros']");
         const corOutrosEl = item.querySelector("[data-role='cor_outros']");
 
         const categoria = categoriaEl ? categoriaEl.value : "";
         const subcategoria = subcategoriaEl ? subcategoriaEl.value : "";
         const nome = nomeEl ? nomeEl.value.trim() : "";
+        const tamanho = tamanhoEl ? tamanhoEl.value : "";
         const quantidade = Math.max(1, parseInt(quantidadeEl?.value || '1', 10) || 1);
         const cor = corEl ? corEl.value : "";
         const valor = parseMoney(valorEl ? valorEl.value : "");
         const categoriaOutros = categoriaOutrosEl ? categoriaOutrosEl.value.trim() : "";
         const subcategoriaOutros = subcategoriaOutrosEl ? subcategoriaOutrosEl.value.trim() : "";
+        const tamanhoOutros = tamanhoOutrosEl ? tamanhoOutrosEl.value.trim() : "";
         const corOutros = corOutrosEl ? corOutrosEl.value.trim() : "";
 
-        if (categoria || nome || valor || categoriaOutros || subcategoria || cor || corOutros) {
+        if (categoria || nome || valor || categoriaOutros || subcategoria || tamanho || cor || tamanhoOutros || corOutros) {
           produtos.push({
             categoria,
             categoriaOutros,
             subcategoria,
             subcategoriaOutros,
             nome,
+            tamanho,
+            tamanhoOutros,
             quantidade,
             cor,
             corOutros,
@@ -1244,7 +1331,7 @@
 
     function buildPayload() {
       const produtos = collectProducts();
-      const totalNumerico = updateTotal();
+      const totais = updateTotal();
       const atendente = atendenteSelect.value === 'outros'
         ? (atendenteOutrosInput.value.trim() || 'Outros')
         : atendenteSelect.value;
@@ -1268,8 +1355,12 @@
         pedidoFinalizadoPor: pedidoFinalizadoSelect.value,
         pedidoFinalizadoPorOutros: pedidoFinalizadoOutrosInput.value.trim(),
         produtos,
-        total: totalInput.value || moneyBRL(totalNumerico),
-        totalNumerico,
+        total: totalInput.value || moneyBRL(totais.total),
+        totalNumerico: totais.total,
+        desconto: descontoInput.value ? moneyBRL(totais.desconto) : '',
+        descontoNumerico: totais.desconto,
+        valorFinal: moneyBRL(totais.valorFinal),
+        valorFinalNumerico: totais.valorFinal,
         quantidadeItens: produtos.reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0),
         quantidadeLinhasProdutos: produtos.length
       };
@@ -1338,6 +1429,7 @@
 
     addProductBtn.addEventListener('click', () => {
       productsList.appendChild(createProductItem());
+      updateTotal();
     });
 
     atendenteSelect.addEventListener('change', () => toggleOtherField(atendenteSelect, atendenteOutrosWrapper, atendenteOutrosInput));
@@ -1355,12 +1447,21 @@
       }
     });
 
+    descontoInput.addEventListener('input', updateTotal);
+    descontoInput.addEventListener('change', updateTotal);
+
     form.addEventListener('reset', () => {
       setTimeout(() => {
         productsList.innerHTML = '';
         productsList.appendChild(createProductItem());
+
+        descontoInput.value = '';
+        valorFinalInput.value = '';
+        valorFinalWrapper.style.display = 'none';
+
         updateTotal();
         setDefaultDateTime();
+
         [
           [atendenteSelect, atendenteOutrosWrapper, atendenteOutrosInput],
           [entregaSelect, entregaOutrosWrapper, entregaOutrosInput],
@@ -1415,6 +1516,7 @@
     }
 
     setDefaultDateTime();
+    updateTotal();
     loadClientRegistry();
   </script>
 </body>
