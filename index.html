@@ -248,47 +248,53 @@
       color: #8e6d5e;
     }
 
+    /* ── LINHA SUPERIOR DO PRODUTO: Categoria · Subcategoria · Nome · Tamanho · Quantidade · Cor ── */
     .product-item {
-      display: grid;
-      grid-template-columns:
-        minmax(140px, 1.2fr)
-        minmax(140px, 1.2fr)
-        minmax(190px, 1.8fr)
-        minmax(120px, 0.9fr)
-        minmax(95px, 0.7fr)
-        minmax(170px, 1.15fr)
-        minmax(120px, 0.85fr)
-        auto;
-      gap: 10px 12px;
-      align-items: end;
-      padding: 12px;
-      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px 14px 12px;
+      margin-bottom: 10px;
       border-radius: 12px;
       background: rgba(246, 238, 220, 0.8);
       border: 1px dashed rgba(205, 160, 70, 0.6);
-      position: relative;
     }
 
-    .product-col-categoria,
-    .product-col-subcategoria,
-    .product-col-nome,
-    .product-col-tamanho,
-    .product-col-quantidade,
-    .product-col-cor,
-    .product-col-valor,
-    .product-col-remove {
-      grid-column: auto;
-      min-width: 0;
-    }
-
-    .product-col-remove {
-      display: flex;
+    /* Linha 1: 6 campos principais */
+    .product-row-top {
+      display: grid;
+      grid-template-columns: 140px 160px 1fr 110px 90px 150px;
+      gap: 10px 14px;
       align-items: end;
+    }
+
+    /* Linha 2: Valor + Remover + separador visual */
+    .product-row-bottom {
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
       justify-content: flex-end;
     }
 
-    .product-item:first-of-type {
-      margin-top: 4px;
+    .product-row-bottom .field {
+      width: 160px;
+      flex-shrink: 0;
+    }
+
+    .product-row-bottom .btn-row {
+      flex-shrink: 0;
+      margin-bottom: 0;
+    }
+
+    /* Campos "Outros" ocupam linha inteira */
+    .product-extras {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px 14px;
+    }
+
+    .product-extras .field--full {
+      grid-column: 1 / -1;
     }
 
     .pill-label {
@@ -351,7 +357,7 @@
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 0;
     }
 
     .products-actions {
@@ -443,45 +449,50 @@
       color: #a12626;
     }
 
-    @media (max-width: 1080px) {
-      .product-item {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    /* Totais ficam na mesma linha horizontal */
+    .product-totals-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(220, 199, 160, 0.5);
+      justify-content: flex-end;
+    }
 
-      .product-col-categoria,
-      .product-col-subcategoria,
-      .product-col-nome,
-      .product-col-tamanho,
-      .product-col-cor { grid-column: auto; }
+    .product-totals-row .field {
+      width: 200px;
+      flex-shrink: 0;
+    }
 
-      .product-col-quantidade,
-      .product-col-valor,
-      .product-col-remove { grid-column: auto; }
-
-      .product-item .btn-row {
-        grid-column: auto;
-        margin-top: 0;
+    /* ── RESPONSIVO ── */
+    @media (max-width: 900px) {
+      .product-row-top {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
-    @media (max-width: 840px) {
-      .product-item {
-        grid-template-columns: 1fr;
+    @media (max-width: 600px) {
+      .product-row-top {
+        grid-template-columns: repeat(2, 1fr);
       }
 
-      .product-col-categoria,
-      .product-col-subcategoria,
-      .product-col-nome,
-      .product-col-tamanho,
-      .product-col-quantidade,
-      .product-col-cor,
-      .product-col-valor,
-      .product-col-remove {
-        grid-column: auto;
+      .product-row-bottom {
+        flex-direction: column;
+        align-items: stretch;
       }
 
-      .product-col-remove {
-        justify-content: flex-start;
+      .product-row-bottom .field {
+        width: 100%;
+      }
+
+      .product-totals-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .product-totals-row .field {
+        width: 100%;
       }
     }
 
@@ -501,13 +512,8 @@
 
       .grid-3,
       .grid-2,
-      .product-item,
       .footer-grid {
         grid-template-columns: 1fr;
-      }
-
-      .product-item {
-        padding-bottom: 10px;
       }
 
       .products-actions,
@@ -595,16 +601,17 @@
       <section class="card">
         <div class="products-header">
           <div class="section-title">Produtos</div>
-          <p>Adicione todos os itens da venda. Use o botão “+ produto” para incluir novos.</p>
+          <p>Adicione todos os itens da venda. Use o botão "+ produto" para incluir novos.</p>
         </div>
 
         <div id="products-list"></div>
 
-        <div class="grid-3" style="margin-top:10px; max-width:780px; margin-left:auto;">
+        <!-- Totais separados abaixo dos produtos -->
+        <div class="product-totals-row">
           <div class="field">
             <label for="valor-total">Valor total da venda</label>
             <input type="text" id="valor-total" name="valor_total" readonly placeholder="R$ 0,00">
-            <span class="field-helper">Calculado automaticamente pelos produtos.</span>
+            <span class="field-helper">Calculado automaticamente.</span>
           </div>
 
           <div class="field">
@@ -614,9 +621,9 @@
           </div>
 
           <div class="field" id="valor-final-wrapper" style="display:none;">
-            <label for="valor-final">Valor final da venda</label>
+            <label for="valor-final">Valor final</label>
             <input type="text" id="valor-final" name="valor_final" readonly placeholder="R$ 0,00">
-            <span class="field-helper">Valor total menos desconto.</span>
+            <span class="field-helper">Total menos desconto.</span>
           </div>
         </div>
 
@@ -641,7 +648,7 @@
               <option value="outros">Outros</option>
             </select>
             <span class="field-helper">
-              Se necessário, detalhe em observações ou em “Outros”.
+              Se necessário, detalhe em observações ou em "Outros".
             </span>
           </div>
 
@@ -989,33 +996,7 @@
       const mostrarValorFinal = desconto > 0;
       valorFinalWrapper.style.display = mostrarValorFinal ? 'flex' : 'none';
 
-      return {
-        total,
-        desconto,
-        valorFinal
-      };
-    }
-
-    function resolveProductLabel(categoryValue, categoryOther, subValue, subOther, sizeValue, sizeOther, colorValue, colorOther) {
-      const categoryText = categoryValue === 'outros'
-        ? (categoryOther || 'Outros')
-        : (CATEGORY_LABELS[categoryValue] || categoryValue || '');
-
-      const categoryOptions = SUBCATEGORY_MAP[categoryValue] || [];
-      const subData = categoryOptions.find(item => item.value === subValue);
-      const subText = subValue === 'outros'
-        ? (subOther || 'Outros')
-        : (subData ? subData.label : (subValue || ''));
-
-      const sizeText = sizeValue === 'outros'
-        ? (sizeOther || 'Outros')
-        : (SIZE_LABELS[sizeValue] || sizeValue || '');
-
-      const colorText = colorValue === 'outros'
-        ? (colorOther || 'Outros')
-        : (COLOR_LABELS[colorValue] || colorValue || '');
-
-      return { categoryText, subText, sizeText, colorText };
+      return { total, desconto, valorFinal };
     }
 
     function buildSubcategoryOptions(categoryValue, selectEl, selectedValue = '') {
@@ -1119,122 +1100,131 @@
       wrapper.className = 'product-item';
 
       wrapper.innerHTML = `
-        <div class="field product-col-categoria">
-          <span class="pill-label">Categoria<span class="required">*</span></span>
-          <select data-role="categoria" name="produtos[${index}][categoria]" required>
-            <option value="">Selecione...</option>
-            <option value="lingeries">Lingeries</option>
-            <option value="sexy-shop">Sexy shop</option>
-            <option value="acessorios">Acessórios</option>
-            <option value="calcinhas">Calcinhas</option>
-            <option value="moda-praia">Moda praia</option>
-            <option value="outros">Outros</option>
-          </select>
+        <!-- Linha 1: 6 campos principais -->
+        <div class="product-row-top">
+          <div class="field product-col-categoria">
+            <span class="pill-label">Categoria<span class="required">*</span></span>
+            <select data-role="categoria" name="produtos[${index}][categoria]" required>
+              <option value="">Selecione...</option>
+              <option value="lingeries">Lingeries</option>
+              <option value="sexy-shop">Sexy shop</option>
+              <option value="acessorios">Acessórios</option>
+              <option value="calcinhas">Calcinhas</option>
+              <option value="moda-praia">Moda praia</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+
+          <div class="field product-subcat-field product-col-subcategoria">
+            <span class="pill-label">Subcategoria</span>
+            <select data-role="subcategoria" name="produtos[${index}][subcategoria]">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+
+          <div class="field product-col-nome">
+            <span class="pill-label">Nome do produto<span class="required">*</span></span>
+            <input type="text"
+                   data-role="nome"
+                   name="produtos[${index}][nome]"
+                   placeholder="Ex.: Conjunto renda vinho, calcinha fio dental..."
+                   required>
+          </div>
+
+          <div class="field product-col-tamanho">
+            <span class="pill-label">Tamanho<span class="required">*</span></span>
+            <select data-role="tamanho" name="produtos[${index}][tamanho]" required>
+              <option value="">Selecione...</option>
+              <option value="p">P</option>
+              <option value="m">M</option>
+              <option value="g">G</option>
+              <option value="gg">GG</option>
+              <option value="u">U</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+
+          <div class="field product-col-quantidade">
+            <span class="pill-label">Qtd.<span class="required">*</span></span>
+            <input type="number"
+                   min="1"
+                   step="1"
+                   value="1"
+                   data-role="quantidade"
+                   name="produtos[${index}][quantidade]"
+                   required>
+          </div>
+
+          <div class="field product-col-cor">
+            <span class="pill-label">Cor<span class="required">*</span></span>
+            <select data-role="cor" name="produtos[${index}][cor]" required>
+              <option value="">Selecione...</option>
+              <option value="preto">Preto</option>
+              <option value="vermelho">Vermelho</option>
+              <option value="branco">Branco</option>
+              <option value="rosa">Rosa</option>
+              <option value="roxo">Roxo</option>
+              <option value="verde">Verde</option>
+              <option value="nao">Não</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
         </div>
 
-        <div class="field product-subcat-field product-col-subcategoria">
-          <span class="pill-label">Subcategoria</span>
-          <select data-role="subcategoria" name="produtos[${index}][subcategoria]">
-            <option value="">Selecione...</option>
-          </select>
+        <!-- Linha 2: Valor + Remover (alinhados à direita) -->
+        <div class="product-row-bottom">
+          <div class="field">
+            <span class="pill-label">Valor (R$)<span class="required">*</span></span>
+            <input type="number"
+                   step="0.01"
+                   min="0"
+                   inputmode="decimal"
+                   data-role="valor"
+                   name="produtos[${index}][valor]"
+                   placeholder="0,00"
+                   required>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-icon btn-icon--ghost btn-remove-product">
+              remover
+            </button>
+          </div>
         </div>
 
-        <div class="field product-col-nome">
-          <span class="pill-label">Nome do produto<span class="required">*</span></span>
-          <input type="text"
-                 data-role="nome"
-                 name="produtos[${index}][nome]"
-                 placeholder="Ex.: Conjunto renda vinho, calcinha fio dental, óleo corporal…"
-                 required>
-        </div>
+        <!-- Campos extras ("Outros") -->
+        <div class="product-extras">
+          <div class="field field--full product-cat-outros" style="display:none;">
+            <span class="pill-label">Informe a categoria (Outros)</span>
+            <input type="text"
+                   data-role="categoria_outros"
+                   name="produtos[${index}][categoria_outros]"
+                   placeholder="Digite a categoria do produto">
+          </div>
 
-        <div class="field product-col-tamanho">
-          <span class="pill-label">Tamanho<span class="required">*</span></span>
-          <select data-role="tamanho" name="produtos[${index}][tamanho]" required>
-            <option value="">Selecione...</option>
-            <option value="p">P</option>
-            <option value="m">M</option>
-            <option value="g">G</option>
-            <option value="gg">GG</option>
-            <option value="u">U</option>
-            <option value="outros">Outros</option>
-          </select>
-        </div>
+          <div class="field field--full product-subcat-outros" style="display:none;">
+            <span class="pill-label">Informe a subcategoria (Outros)</span>
+            <input type="text"
+                   data-role="subcategoria_outros"
+                   name="produtos[${index}][subcategoria_outros]"
+                   placeholder="Digite a subcategoria do produto">
+          </div>
 
-        <div class="field product-col-quantidade">
-          <span class="pill-label">Quantidade<span class="required">*</span></span>
-          <input type="number"
-                 min="1"
-                 step="1"
-                 value="1"
-                 data-role="quantidade"
-                 name="produtos[${index}][quantidade]"
-                 required>
-        </div>
+          <div class="field product-size-outros" style="display:none;">
+            <span class="pill-label">Informe o tamanho (Outros)</span>
+            <input type="text"
+                   data-role="tamanho_outros"
+                   name="produtos[${index}][tamanho_outros]"
+                   placeholder="Digite o tamanho">
+          </div>
 
-        <div class="field product-col-cor">
-          <span class="pill-label">Cor<span class="required">*</span></span>
-          <select data-role="cor" name="produtos[${index}][cor]" required>
-            <option value="">Selecione...</option>
-            <option value="preto">Preto</option>
-            <option value="vermelho">Vermelho</option>
-            <option value="branco">Branco</option>
-            <option value="rosa">Rosa</option>
-            <option value="roxo">Roxo</option>
-            <option value="verde">Verde</option>
-            <option value="nao">Não</option>
-            <option value="outros">Outros</option>
-          </select>
-        </div>
-
-        <div class="field product-col-valor">
-          <span class="pill-label">Valor (R$)<span class="required">*</span></span>
-          <input type="number"
-                 step="0.01"
-                 min="0"
-                 inputmode="decimal"
-                 data-role="valor"
-                 name="produtos[${index}][valor]"
-                 placeholder="0,00"
-                 required>
-        </div>
-
-        <div class="btn-row product-col-remove">
-          <button type="button" class="btn-icon btn-icon--ghost btn-remove-product">
-            remover
-          </button>
-        </div>
-
-        <div class="field field--full product-cat-outros" style="display:none; margin-top:6px;">
-          <span class="pill-label">Informe a categoria (Outros)</span>
-          <input type="text"
-                 data-role="categoria_outros"
-                 name="produtos[${index}][categoria_outros]"
-                 placeholder="Digite a categoria do produto">
-        </div>
-
-        <div class="field field--full product-subcat-outros" style="display:none; margin-top:6px;">
-          <span class="pill-label">Informe a subcategoria (Outros)</span>
-          <input type="text"
-                 data-role="subcategoria_outros"
-                 name="produtos[${index}][subcategoria_outros]"
-                 placeholder="Digite a subcategoria do produto">
-        </div>
-
-        <div class="field field--full product-size-outros" style="display:none; margin-top:6px;">
-          <span class="pill-label">Informe o tamanho (Outros)</span>
-          <input type="text"
-                 data-role="tamanho_outros"
-                 name="produtos[${index}][tamanho_outros]"
-                 placeholder="Digite o tamanho do produto">
-        </div>
-
-        <div class="field field--full product-cor-outros" style="display:none; margin-top:6px;">
-          <span class="pill-label">Informe a cor (Outros)</span>
-          <input type="text"
-                 data-role="cor_outros"
-                 name="produtos[${index}][cor_outros]"
-                 placeholder="Digite a cor do produto">
+          <div class="field product-cor-outros" style="display:none;">
+            <span class="pill-label">Informe a cor (Outros)</span>
+            <input type="text"
+                   data-role="cor_outros"
+                   name="produtos[${index}][cor_outros]"
+                   placeholder="Digite a cor">
+          </div>
         </div>
       `;
 
