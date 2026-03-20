@@ -458,7 +458,7 @@
     }
 
     .product-totals-row .field {
-      width: 200px;
+      width: 210px;
       flex-shrink: 0;
     }
 
@@ -631,7 +631,7 @@
           <div class="field" id="valor-final-wrapper" style="display:none;">
             <label for="valor-final">Valor cobrado do cliente</label>
             <input type="text" id="valor-final" name="valor_final" readonly placeholder="R$ 0,00">
-            <span class="field-helper">Produtos + entrega - desconto - taxa site.</span>
+            <span class="field-helper">Produtos + entrega - desconto.</span>
           </div>
         </div>
 
@@ -991,15 +991,24 @@
       const desconto = Math.max(0, parseMoney(descontoInput?.value || '0'));
       const taxaEntrega = Math.max(0, parseMoney(taxaEntregaInput?.value || '0'));
       const taxaSite = Math.max(0, parseMoney(taxaSiteInput?.value || '0'));
-      const valorFinal = Math.max(total + taxaEntrega - desconto - taxaSite, 0);
+
+      const valorCobradoCliente = Math.max(total + taxaEntrega - desconto, 0);
+      const totalLoja = Math.max(valorCobradoCliente - taxaEntrega - taxaSite, 0);
 
       totalInput.value = total > 0 ? moneyBRL(total) : '';
-      valorFinalInput.value = moneyBRL(valorFinal);
+      valorFinalInput.value = moneyBRL(valorCobradoCliente);
 
       const mostrarValorFinal = total > 0 || desconto > 0 || taxaEntrega > 0 || taxaSite > 0;
       valorFinalWrapper.style.display = mostrarValorFinal ? 'flex' : 'none';
 
-      return { total, desconto, taxaEntrega, taxaSite, valorFinal };
+      return {
+        total,
+        desconto,
+        taxaEntrega,
+        taxaSite,
+        valorCobradoCliente,
+        totalLoja
+      };
     }
 
     function buildSubcategoryOptions(categoryValue, selectEl, selectedValue = '') {
@@ -1365,8 +1374,10 @@
         taxaEntregaNumerico: totais.taxaEntrega,
         taxaSite: taxaSiteInput.value !== '' ? moneyBRL(totais.taxaSite) : '',
         taxaSiteNumerico: totais.taxaSite,
-        valorFinal: moneyBRL(totais.valorFinal),
-        valorFinalNumerico: totais.valorFinal,
+        valorCobradoCliente: moneyBRL(totais.valorCobradoCliente),
+        valorCobradoClienteNumerico: totais.valorCobradoCliente,
+        totalLoja: moneyBRL(totais.totalLoja),
+        totalLojaNumerico: totais.totalLoja,
         quantidadeItens: produtos.reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0),
         quantidadeLinhasProdutos: produtos.length
       };
@@ -1480,6 +1491,7 @@
     });
 
     formaPagamentoSelect.addEventListener('change', () => toggleOtherField(formaPagamentoSelect, pagamentoOutrosWrapper, pagamentoOutrosInput));
+
     origemSelect.addEventListener('change', () => toggleOtherField(origemSelect, origemOutrosWrapper, origemOutrosInput));
 
     pedidoFinalizadoSelect.addEventListener('change', () => {
