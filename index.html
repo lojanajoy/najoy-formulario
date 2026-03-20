@@ -370,13 +370,6 @@
       margin-top: 6px;
     }
 
-    .footer-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
-      gap: 18px;
-      align-items: start;
-    }
-
     .pill-note {
       font-size: 11px;
       background: rgba(255, 253, 246, 0.6);
@@ -514,8 +507,7 @@
       }
 
       .grid-3,
-      .grid-2,
-      .footer-grid {
+      .grid-2 {
         grid-template-columns: 1fr;
       }
 
@@ -563,7 +555,7 @@
               <option value="Joyce">Joyce</option>
               <option value="Felipe">Felipe</option>
               <option value="Helen">Helen</option>
-              <option value="SITE">SITE</option>
+              <option value="Site">Site</option>
               <option value="outros">Outros</option>
             </select>
           </div>
@@ -613,7 +605,7 @@
 
         <div class="product-totals-row">
           <div class="field">
-            <label for="valor-total">Valor total da venda</label>
+            <label for="valor-total">Valor total dos produtos</label>
             <input type="text" id="valor-total" name="valor_total" readonly placeholder="R$ 0,00">
             <span class="field-helper">Calculado automaticamente.</span>
           </div>
@@ -625,21 +617,21 @@
           </div>
 
           <div class="field" id="taxa-entrega-wrapper" style="display:none;">
-            <label for="taxa-entrega">Valor da entrega</label>
+            <label for="taxa-entrega">Valor da entrega<span class="required">*</span></label>
             <input type="number" id="taxa-entrega" name="taxa_entrega" min="0" step="0.01" placeholder="0,00">
-            <span class="field-helper">Somado ao valor final.</span>
+            <span class="field-helper">Obrigatório para entregador.</span>
           </div>
 
           <div class="field" id="taxa-site-wrapper" style="display:none;">
-            <label for="taxa-site">Taxa do site</label>
+            <label for="taxa-site">Taxa do site<span class="required">*</span></label>
             <input type="number" id="taxa-site" name="taxa_site" min="0" step="0.01" placeholder="0,00">
-            <span class="field-helper">Subtraída do valor final.</span>
+            <span class="field-helper">Obrigatório quando finalizado por site.</span>
           </div>
 
           <div class="field" id="valor-final-wrapper" style="display:none;">
-            <label for="valor-final">Valor final</label>
+            <label for="valor-final">Valor cobrado do cliente</label>
             <input type="text" id="valor-final" name="valor_final" readonly placeholder="R$ 0,00">
-            <span class="field-helper">Produtos + entrega - desconto - taxa do site.</span>
+            <span class="field-helper">Produtos + entrega - desconto - taxa site.</span>
           </div>
         </div>
 
@@ -967,31 +959,19 @@
       }
 
       clienteInput.value = '';
-      const inputVariants = getPhoneVariants(normalized);
-      const suggestions = clientsCache
-        .filter(client => {
-          const clientPhone = client.telefoneNormalizado || client.telefone || '';
-          return inputVariants.some(variant => normalizePhone(clientPhone).includes(variant) || variant.includes(normalizePhone(clientPhone)));
-        })
-        .slice(0, 3)
-        .map(client => client.cliente)
-        .filter(Boolean);
-
-      if (suggestions.length) {
-        clienteEncontradoEl.textContent = `Sugestões: ${suggestions.join(', ')}`;
-      } else {
-        clienteEncontradoEl.textContent = 'Cliente ainda não cadastrado.';
-      }
+      clienteEncontradoEl.textContent = 'Cliente ainda não cadastrado.';
       clienteEncontradoEl.className = 'field-helper';
     }
 
     function updateConditionalCharges() {
       const isEntregador = entregaSelect.value === 'entregador';
       taxaEntregaWrapper.style.display = isEntregador ? 'flex' : 'none';
+      taxaEntregaInput.required = isEntregador;
       if (!isEntregador) taxaEntregaInput.value = '';
 
       const isSite = pedidoFinalizadoSelect.value === 'site';
       taxaSiteWrapper.style.display = isSite ? 'flex' : 'none';
+      taxaSiteInput.required = isSite;
       if (!isSite) taxaSiteInput.value = '';
 
       updateTotal();
@@ -1013,10 +993,10 @@
       const taxaSite = Math.max(0, parseMoney(taxaSiteInput?.value || '0'));
       const valorFinal = Math.max(total + taxaEntrega - desconto - taxaSite, 0);
 
-      totalInput.value = total > 0 ? moneyBRL(total) : "";
+      totalInput.value = total > 0 ? moneyBRL(total) : '';
       valorFinalInput.value = moneyBRL(valorFinal);
 
-      const mostrarValorFinal = desconto > 0 || taxaEntrega > 0 || taxaSite > 0 || total > 0;
+      const mostrarValorFinal = total > 0 || desconto > 0 || taxaEntrega > 0 || taxaSite > 0;
       valorFinalWrapper.style.display = mostrarValorFinal ? 'flex' : 'none';
 
       return { total, desconto, taxaEntrega, taxaSite, valorFinal };
@@ -1061,6 +1041,7 @@
       const corOutrosInput = wrapper.querySelector("[data-role='cor_outros']");
 
       const categoria = categoriaSelect.value;
+
       if (rebuildSubcategory) {
         const valueToKeep = selectedSubcategory !== null ? selectedSubcategory : subcategoriaSelect.value;
         buildSubcategoryOptions(categoria, subcategoriaSelect, valueToKeep);
@@ -1083,6 +1064,7 @@
         subField.style.display = 'block';
         const hasSubcategories = (SUBCATEGORY_MAP[categoria] || []).length > 0;
         subcategoriaSelect.required = hasSubcategories;
+
         if (!hasSubcategories) {
           subcategoriaSelect.value = '';
           subOutrosWrapper.style.display = 'none';
@@ -1297,6 +1279,7 @@
 
     function collectProducts() {
       const produtos = [];
+
       Array.from(productsList.children).forEach(item => {
         const categoriaEl = item.querySelector("[data-role='categoria']");
         const subcategoriaEl = item.querySelector("[data-role='subcategoria']");
@@ -1339,6 +1322,7 @@
           });
         }
       });
+
       return produtos;
     }
 
@@ -1403,6 +1387,7 @@
           telefoneNormalizado: phoneKey
         });
       }
+
       refreshClientDatalist();
     }
 
@@ -1417,11 +1402,7 @@
     }
 
     function applyClientsResponse(response) {
-      if (!response || !Array.isArray(response.clients)) {
-        clienteEncontradoEl.textContent = 'Não foi possível carregar a lista de clientes.';
-        clienteEncontradoEl.className = 'field-helper';
-        return;
-      }
+      if (!response || !Array.isArray(response.clients)) return;
 
       clientsCache = response.clients.map(client => {
         const telefoneBruto = String(client.telefone || client.telefoneNormalizado || '').trim();
@@ -1461,8 +1442,6 @@
       script.async = true;
       script.onerror = () => {
         delete window[callbackName];
-        clienteEncontradoEl.textContent = 'Não foi possível carregar a lista de clientes.';
-        clienteEncontradoEl.className = 'field-helper';
       };
       document.body.appendChild(script);
     }
@@ -1494,12 +1473,15 @@
     });
 
     atendenteSelect.addEventListener('change', () => toggleOtherField(atendenteSelect, atendenteOutrosWrapper, atendenteOutrosInput));
+
     entregaSelect.addEventListener('change', () => {
       toggleOtherField(entregaSelect, entregaOutrosWrapper, entregaOutrosInput);
       updateConditionalCharges();
     });
+
     formaPagamentoSelect.addEventListener('change', () => toggleOtherField(formaPagamentoSelect, pagamentoOutrosWrapper, pagamentoOutrosInput));
     origemSelect.addEventListener('change', () => toggleOtherField(origemSelect, origemOutrosWrapper, origemOutrosInput));
+
     pedidoFinalizadoSelect.addEventListener('change', () => {
       toggleOtherField(pedidoFinalizadoSelect, pedidoFinalizadoOutrosWrapper, pedidoFinalizadoOutrosInput);
       updateConditionalCharges();
@@ -1559,12 +1541,12 @@
 
       if (isSubmitting) return;
 
-      feedbackEl.textContent = "";
-      feedbackEl.className = "feedback";
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'feedback';
 
       if (!WEB_APP_URL) {
-        feedbackEl.textContent = "Configure o WEB_APP_URL antes de publicar.";
-        feedbackEl.classList.add("error");
+        feedbackEl.textContent = 'Configure o WEB_APP_URL antes de publicar.';
+        feedbackEl.classList.add('error');
         return;
       }
 
@@ -1572,34 +1554,48 @@
       const payload = buildPayload(requestId);
 
       if (!payload.produtos.length) {
-        feedbackEl.textContent = "Adicione pelo menos um produto.";
-        feedbackEl.classList.add("error");
+        feedbackEl.textContent = 'Adicione pelo menos um produto.';
+        feedbackEl.classList.add('error');
+        return;
+      }
+
+      if (entregaSelect.value === 'entregador' && taxaEntregaInput.value === '') {
+        feedbackEl.textContent = 'Informe o valor da entrega.';
+        feedbackEl.classList.add('error');
+        taxaEntregaInput.focus();
+        return;
+      }
+
+      if (pedidoFinalizadoSelect.value === 'site' && taxaSiteInput.value === '') {
+        feedbackEl.textContent = 'Informe a taxa do site.';
+        feedbackEl.classList.add('error');
+        taxaSiteInput.focus();
         return;
       }
 
       try {
         isSubmitting = true;
         submitBtn.disabled = true;
-        feedbackEl.textContent = "Enviando registro para a planilha...";
+        feedbackEl.textContent = 'Enviando registro para a planilha...';
 
         await fetch(WEB_APP_URL, {
-          method: "POST",
-          mode: "no-cors",
+          method: 'POST',
+          mode: 'no-cors',
           body: JSON.stringify(payload)
         });
 
         pushClientToCache(payload);
         pushProductsToCache(payload);
 
-        feedbackEl.textContent = "Venda registrada com sucesso!";
-        feedbackEl.classList.add("success");
+        feedbackEl.textContent = 'Venda registrada com sucesso!';
+        feedbackEl.classList.add('success');
         form.reset();
       } catch (error) {
         console.error(error);
         isSubmitting = false;
         submitBtn.disabled = false;
-        feedbackEl.textContent = "Ocorreu um erro ao enviar para a planilha.";
-        feedbackEl.classList.add("error");
+        feedbackEl.textContent = 'Ocorreu um erro ao enviar para a planilha.';
+        feedbackEl.classList.add('error');
       }
     });
 
