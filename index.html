@@ -248,7 +248,6 @@
       color: #8e6d5e;
     }
 
-    /* ── LINHA SUPERIOR DO PRODUTO: Categoria · Subcategoria · Nome · Tamanho · Quantidade · Cor ── */
     .product-item {
       display: flex;
       flex-direction: column;
@@ -260,7 +259,6 @@
       border: 1px dashed rgba(205, 160, 70, 0.6);
     }
 
-    /* Linha 1: 6 campos principais */
     .product-row-top {
       display: grid;
       grid-template-columns: 140px 160px 1fr 110px 90px 150px;
@@ -268,7 +266,6 @@
       align-items: end;
     }
 
-    /* Linha 2: Valor + Remover + separador visual */
     .product-row-bottom {
       display: flex;
       align-items: flex-end;
@@ -286,7 +283,6 @@
       margin-bottom: 0;
     }
 
-    /* Campos "Outros" ocupam linha inteira */
     .product-extras {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -351,6 +347,14 @@
       filter: brightness(1.02);
       transform: translateY(-1px);
       box-shadow: 0 12px 30px rgba(107, 17, 21, 0.26);
+    }
+
+    .btn-icon[disabled],
+    .btn-main[disabled] {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     .btn-row {
@@ -449,7 +453,6 @@
       color: #a12626;
     }
 
-    /* Totais ficam na mesma linha horizontal */
     .product-totals-row {
       display: flex;
       align-items: flex-end;
@@ -458,6 +461,7 @@
       padding-top: 12px;
       border-top: 1px solid rgba(220, 199, 160, 0.5);
       justify-content: flex-end;
+      flex-wrap: wrap;
     }
 
     .product-totals-row .field {
@@ -465,7 +469,6 @@
       flex-shrink: 0;
     }
 
-    /* ── RESPONSIVO ── */
     @media (max-width: 900px) {
       .product-row-top {
         grid-template-columns: repeat(3, 1fr);
@@ -560,6 +563,7 @@
               <option value="Joyce">Joyce</option>
               <option value="Felipe">Felipe</option>
               <option value="Helen">Helen</option>
+              <option value="SITE">SITE</option>
               <option value="outros">Outros</option>
             </select>
           </div>
@@ -605,8 +609,8 @@
         </div>
 
         <div id="products-list"></div>
+        <datalist id="produtos-cadastrados"></datalist>
 
-        <!-- Totais separados abaixo dos produtos -->
         <div class="product-totals-row">
           <div class="field">
             <label for="valor-total">Valor total da venda</label>
@@ -620,10 +624,22 @@
             <span class="field-helper">Opcional.</span>
           </div>
 
+          <div class="field" id="taxa-entrega-wrapper" style="display:none;">
+            <label for="taxa-entrega">Valor da entrega</label>
+            <input type="number" id="taxa-entrega" name="taxa_entrega" min="0" step="0.01" placeholder="0,00">
+            <span class="field-helper">Somado ao valor final.</span>
+          </div>
+
+          <div class="field" id="taxa-site-wrapper" style="display:none;">
+            <label for="taxa-site">Taxa do site</label>
+            <input type="number" id="taxa-site" name="taxa_site" min="0" step="0.01" placeholder="0,00">
+            <span class="field-helper">Subtraída do valor final.</span>
+          </div>
+
           <div class="field" id="valor-final-wrapper" style="display:none;">
             <label for="valor-final">Valor final</label>
             <input type="text" id="valor-final" name="valor_final" readonly placeholder="R$ 0,00">
-            <span class="field-helper">Total menos desconto.</span>
+            <span class="field-helper">Produtos + entrega - desconto - taxa do site.</span>
           </div>
         </div>
 
@@ -732,7 +748,7 @@
 
       <div class="actions">
         <button type="reset" class="btn-secondary">limpar</button>
-        <button type="submit" class="btn-main">registrar venda</button>
+        <button type="submit" class="btn-main" id="submit-btn">registrar venda</button>
       </div>
 
       <p class="required-note">
@@ -770,43 +786,19 @@
       "calcinhas": []
     };
 
-    const CATEGORY_LABELS = {
-      "lingeries": "Lingeries",
-      "sexy-shop": "Sexy shop",
-      "acessorios": "Acessórios",
-      "calcinhas": "Calcinhas",
-      "moda-praia": "Moda praia",
-      "outros": "Outros"
-    };
-
-    const COLOR_LABELS = {
-      "preto": "Preto",
-      "vermelho": "Vermelho",
-      "branco": "Branco",
-      "rosa": "Rosa",
-      "roxo": "Roxo",
-      "verde": "Verde",
-      "nao": "Não",
-      "outros": "Outros"
-    };
-
-    const SIZE_LABELS = {
-      "p": "P",
-      "m": "M",
-      "g": "G",
-      "gg": "GG",
-      "u": "U",
-      "outros": "Outros"
-    };
-
     const productsList = document.getElementById('products-list');
     const addProductBtn = document.getElementById('btn-add-product');
     const totalInput = document.getElementById('valor-total');
     const descontoInput = document.getElementById('desconto');
+    const taxaEntregaInput = document.getElementById('taxa-entrega');
+    const taxaSiteInput = document.getElementById('taxa-site');
+    const taxaEntregaWrapper = document.getElementById('taxa-entrega-wrapper');
+    const taxaSiteWrapper = document.getElementById('taxa-site-wrapper');
     const valorFinalInput = document.getElementById('valor-final');
     const valorFinalWrapper = document.getElementById('valor-final-wrapper');
     const form = document.getElementById('form-venda');
     const feedbackEl = document.getElementById('feedback');
+    const submitBtn = document.getElementById('submit-btn');
 
     const atendenteSelect = document.getElementById('atendente');
     const atendenteOutrosWrapper = document.getElementById('atendente-outros-wrapper');
@@ -817,6 +809,9 @@
     const telefoneDatalist = document.getElementById('telefones-cadastrados');
     const clienteEncontradoEl = document.getElementById('cliente-encontrado');
     let clientsCache = [];
+
+    const produtosDatalist = document.getElementById('produtos-cadastrados');
+    let productNamesCache = [];
 
     const entregaSelect = document.getElementById('tipo-entrega');
     const entregaOutrosWrapper = document.getElementById('entrega-outros-wrapper');
@@ -833,6 +828,8 @@
     const pedidoFinalizadoSelect = document.getElementById('pedido-finalizado-por');
     const pedidoFinalizadoOutrosWrapper = document.getElementById('pedido-finalizado-outros-wrapper');
     const pedidoFinalizadoOutrosInput = document.getElementById('pedido-finalizado-outros');
+
+    let isSubmitting = false;
 
     function toggleOtherField(selectEl, wrapperEl, inputEl) {
       const isOther = selectEl.value === 'outros';
@@ -937,6 +934,18 @@
         });
     }
 
+    function refreshProductDatalist() {
+      produtosDatalist.innerHTML = '';
+      productNamesCache
+        .slice()
+        .sort((a, b) => a.localeCompare(b))
+        .forEach(name => {
+          const option = document.createElement('option');
+          option.value = name;
+          produtosDatalist.appendChild(option);
+        });
+    }
+
     function syncClientFromPhone() {
       const normalized = normalizePhone(telefoneInput.value);
       if (!normalized) {
@@ -976,6 +985,18 @@
       clienteEncontradoEl.className = 'field-helper';
     }
 
+    function updateConditionalCharges() {
+      const isEntregador = entregaSelect.value === 'entregador';
+      taxaEntregaWrapper.style.display = isEntregador ? 'flex' : 'none';
+      if (!isEntregador) taxaEntregaInput.value = '';
+
+      const isSite = pedidoFinalizadoSelect.value === 'site';
+      taxaSiteWrapper.style.display = isSite ? 'flex' : 'none';
+      if (!isSite) taxaSiteInput.value = '';
+
+      updateTotal();
+    }
+
     function updateTotal() {
       let total = 0;
 
@@ -988,15 +1009,17 @@
       });
 
       const desconto = Math.max(0, parseMoney(descontoInput?.value || '0'));
-      const valorFinal = Math.max(total - desconto, 0);
+      const taxaEntrega = Math.max(0, parseMoney(taxaEntregaInput?.value || '0'));
+      const taxaSite = Math.max(0, parseMoney(taxaSiteInput?.value || '0'));
+      const valorFinal = Math.max(total + taxaEntrega - desconto - taxaSite, 0);
 
       totalInput.value = total > 0 ? moneyBRL(total) : "";
       valorFinalInput.value = moneyBRL(valorFinal);
 
-      const mostrarValorFinal = desconto > 0;
+      const mostrarValorFinal = desconto > 0 || taxaEntrega > 0 || taxaSite > 0 || total > 0;
       valorFinalWrapper.style.display = mostrarValorFinal ? 'flex' : 'none';
 
-      return { total, desconto, valorFinal };
+      return { total, desconto, taxaEntrega, taxaSite, valorFinal };
     }
 
     function buildSubcategoryOptions(categoryValue, selectEl, selectedValue = '') {
@@ -1100,7 +1123,6 @@
       wrapper.className = 'product-item';
 
       wrapper.innerHTML = `
-        <!-- Linha 1: 6 campos principais -->
         <div class="product-row-top">
           <div class="field product-col-categoria">
             <span class="pill-label">Categoria<span class="required">*</span></span>
@@ -1127,6 +1149,8 @@
             <input type="text"
                    data-role="nome"
                    name="produtos[${index}][nome]"
+                   list="produtos-cadastrados"
+                   autocomplete="off"
                    placeholder="Ex.: Conjunto renda vinho, calcinha fio dental..."
                    required>
           </div>
@@ -1140,6 +1164,7 @@
               <option value="g">G</option>
               <option value="gg">GG</option>
               <option value="u">U</option>
+              <option value="nao">Não</option>
               <option value="outros">Outros</option>
             </select>
           </div>
@@ -1171,7 +1196,6 @@
           </div>
         </div>
 
-        <!-- Linha 2: Valor + Remover (alinhados à direita) -->
         <div class="product-row-bottom">
           <div class="field">
             <span class="pill-label">Valor (R$)<span class="required">*</span></span>
@@ -1192,7 +1216,6 @@
           </div>
         </div>
 
-        <!-- Campos extras ("Outros") -->
         <div class="product-extras">
           <div class="field field--full product-cat-outros" style="display:none;">
             <span class="pill-label">Informe a categoria (Outros)</span>
@@ -1319,7 +1342,11 @@
       return produtos;
     }
 
-    function buildPayload() {
+    function generateRequestId() {
+      return `najoy_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function buildPayload(requestId) {
       const produtos = collectProducts();
       const totais = updateTotal();
       const atendente = atendenteSelect.value === 'outros'
@@ -1327,6 +1354,7 @@
         : atendenteSelect.value;
 
       return {
+        requestId,
         atendente,
         atendenteBase: atendenteSelect.value,
         atendenteOutros: atendenteOutrosInput.value.trim(),
@@ -1347,8 +1375,12 @@
         produtos,
         total: totalInput.value || moneyBRL(totais.total),
         totalNumerico: totais.total,
-        desconto: descontoInput.value ? moneyBRL(totais.desconto) : '',
+        desconto: descontoInput.value !== '' ? moneyBRL(totais.desconto) : '',
         descontoNumerico: totais.desconto,
+        taxaEntrega: taxaEntregaInput.value !== '' ? moneyBRL(totais.taxaEntrega) : '',
+        taxaEntregaNumerico: totais.taxaEntrega,
+        taxaSite: taxaSiteInput.value !== '' ? moneyBRL(totais.taxaSite) : '',
+        taxaSiteNumerico: totais.taxaSite,
         valorFinal: moneyBRL(totais.valorFinal),
         valorFinalNumerico: totais.valorFinal,
         quantidadeItens: produtos.reduce((sum, item) => sum + (Number(item.quantidade) || 0), 0),
@@ -1374,6 +1406,16 @@
       refreshClientDatalist();
     }
 
+    function pushProductsToCache(payload) {
+      (payload.produtos || []).forEach(item => {
+        const name = String(item.nome || '').trim();
+        if (name && !productNamesCache.includes(name)) {
+          productNamesCache.push(name);
+        }
+      });
+      refreshProductDatalist();
+    }
+
     function applyClientsResponse(response) {
       if (!response || !Array.isArray(response.clients)) {
         clienteEncontradoEl.textContent = 'Não foi possível carregar a lista de clientes.';
@@ -1392,6 +1434,14 @@
 
       refreshClientDatalist();
       syncClientFromPhone();
+    }
+
+    function applyProductsResponse(response) {
+      if (!response || !Array.isArray(response.productNames)) return;
+      productNamesCache = response.productNames
+        .map(name => String(name || '').trim())
+        .filter(Boolean);
+      refreshProductDatalist();
     }
 
     function loadClientRegistry() {
@@ -1417,16 +1467,43 @@
       document.body.appendChild(script);
     }
 
+    function loadProductRegistry() {
+      const callbackName = `handleProducts_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+      const script = document.createElement('script');
+
+      window[callbackName] = function(response) {
+        try {
+          applyProductsResponse(response);
+        } finally {
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+      };
+
+      script.src = `${WEB_APP_URL}?action=getProductNames&callback=${callbackName}&ts=${Date.now()}`;
+      script.async = true;
+      script.onerror = () => {
+        delete window[callbackName];
+      };
+      document.body.appendChild(script);
+    }
+
     addProductBtn.addEventListener('click', () => {
       productsList.appendChild(createProductItem());
       updateTotal();
     });
 
     atendenteSelect.addEventListener('change', () => toggleOtherField(atendenteSelect, atendenteOutrosWrapper, atendenteOutrosInput));
-    entregaSelect.addEventListener('change', () => toggleOtherField(entregaSelect, entregaOutrosWrapper, entregaOutrosInput));
+    entregaSelect.addEventListener('change', () => {
+      toggleOtherField(entregaSelect, entregaOutrosWrapper, entregaOutrosInput);
+      updateConditionalCharges();
+    });
     formaPagamentoSelect.addEventListener('change', () => toggleOtherField(formaPagamentoSelect, pagamentoOutrosWrapper, pagamentoOutrosInput));
     origemSelect.addEventListener('change', () => toggleOtherField(origemSelect, origemOutrosWrapper, origemOutrosInput));
-    pedidoFinalizadoSelect.addEventListener('change', () => toggleOtherField(pedidoFinalizadoSelect, pedidoFinalizadoOutrosWrapper, pedidoFinalizadoOutrosInput));
+    pedidoFinalizadoSelect.addEventListener('change', () => {
+      toggleOtherField(pedidoFinalizadoSelect, pedidoFinalizadoOutrosWrapper, pedidoFinalizadoOutrosInput);
+      updateConditionalCharges();
+    });
 
     telefoneInput.addEventListener('input', syncClientFromPhone);
     telefoneInput.addEventListener('change', syncClientFromPhone);
@@ -1439,6 +1516,10 @@
 
     descontoInput.addEventListener('input', updateTotal);
     descontoInput.addEventListener('change', updateTotal);
+    taxaEntregaInput.addEventListener('input', updateTotal);
+    taxaEntregaInput.addEventListener('change', updateTotal);
+    taxaSiteInput.addEventListener('input', updateTotal);
+    taxaSiteInput.addEventListener('change', updateTotal);
 
     form.addEventListener('reset', () => {
       setTimeout(() => {
@@ -1446,8 +1527,12 @@
         productsList.appendChild(createProductItem());
 
         descontoInput.value = '';
+        taxaEntregaInput.value = '';
+        taxaSiteInput.value = '';
         valorFinalInput.value = '';
         valorFinalWrapper.style.display = 'none';
+        taxaEntregaWrapper.style.display = 'none';
+        taxaSiteWrapper.style.display = 'none';
 
         updateTotal();
         setDefaultDateTime();
@@ -1464,11 +1549,15 @@
         clienteEncontradoEl.className = 'field-helper';
         feedbackEl.textContent = '';
         feedbackEl.className = 'feedback';
+        isSubmitting = false;
+        submitBtn.disabled = false;
       }, 0);
     });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      if (isSubmitting) return;
 
       feedbackEl.textContent = "";
       feedbackEl.className = "feedback";
@@ -1479,10 +1568,20 @@
         return;
       }
 
-      const payload = buildPayload();
+      const requestId = generateRequestId();
+      const payload = buildPayload(requestId);
+
+      if (!payload.produtos.length) {
+        feedbackEl.textContent = "Adicione pelo menos um produto.";
+        feedbackEl.classList.add("error");
+        return;
+      }
 
       try {
+        isSubmitting = true;
+        submitBtn.disabled = true;
         feedbackEl.textContent = "Enviando registro para a planilha...";
+
         await fetch(WEB_APP_URL, {
           method: "POST",
           mode: "no-cors",
@@ -1490,12 +1589,15 @@
         });
 
         pushClientToCache(payload);
+        pushProductsToCache(payload);
 
         feedbackEl.textContent = "Venda registrada com sucesso!";
         feedbackEl.classList.add("success");
         form.reset();
       } catch (error) {
         console.error(error);
+        isSubmitting = false;
+        submitBtn.disabled = false;
         feedbackEl.textContent = "Ocorreu um erro ao enviar para a planilha.";
         feedbackEl.classList.add("error");
       }
@@ -1506,8 +1608,10 @@
     }
 
     setDefaultDateTime();
+    updateConditionalCharges();
     updateTotal();
     loadClientRegistry();
+    loadProductRegistry();
   </script>
 </body>
 </html>
